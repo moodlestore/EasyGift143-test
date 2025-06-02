@@ -61,52 +61,50 @@ window.AppState = {
     },
     
     // 모드 전환
-    // toggleMode 함수를 toggleModeSwitch로 변경
-toggleModeSwitch: function() {
-    const toggle = document.getElementById('modeToggle');
-    
-    if (toggle.checked && this.currentMode === 'free') {
-        // Free -> Pro로 전환 시도
-        if (this.revenue.total >= 50) {
-            this.currentMode = 'pro';
-            this.updateModeDisplay();
-            this.saveAppState();
-            Navigation.showPage(this.currentPage);
-            Utils.showAchievement('Pro 모드가 활성화되었습니다!');
-        } else {
-            // 수익이 부족하면 토글을 다시 되돌림
-            toggle.checked = false;
+    toggleMode: function() {
+        if (this.currentMode === 'free') {
             document.getElementById('modeModal').style.display = 'block';
             this.updateRevenueDisplay();
-        }
-    } else if (!toggle.checked && this.currentMode === 'pro') {
-        // Pro -> Free로 전환
-        if (confirm('Free 모드로 다운그레이드하시겠습니까?')) {
-            this.currentMode = 'free';
-            this.updateModeDisplay();
-            this.saveAppState();
-            Navigation.showPage(this.currentPage);
         } else {
-            toggle.checked = true; // 취소하면 토글 되돌림
+            // Pro -> Free 다운그레이드
+            if (confirm('Free 모드로 다운그레이드하시겠습니까?')) {
+                this.currentMode = 'free';
+                this.updateModeDisplay();
+                this.saveAppState();
+                
+                // 분석 대시보드에 있으면 제품 등록으로 이동
+                if (this.currentPage === 'analytics-dashboard') {
+                    Navigation.showPage('product-register');
+                    document.querySelector('[data-page="product-register"]').classList.add('active');
+                    document.querySelector('[data-page="analytics-dashboard"]').classList.remove('active');
+                }
+                
+                // 현재 페이지 새로고침
+                Navigation.showPage(this.currentPage);
+            }
         }
-    }
-},
+    },
     
-// updateModeDisplay 함수 수정
-updateModeDisplay: function() {
-    const toggle = document.getElementById('modeToggle');
-    const analyticsTab = document.getElementById('analyticsTab');
-    
-    if (toggle) {
-        toggle.checked = (this.currentMode === 'pro');
-    }
-    
-    if (this.currentMode === 'pro') {
-        analyticsTab.classList.remove('disabled');
-    } else {
-        analyticsTab.classList.add('disabled');
-    }
-},
+    // 모드 표시 업데이트
+    updateModeDisplay: function() {
+        const currentModeEl = document.getElementById('currentMode');
+        const upgradeBtnEl = document.getElementById('upgradeModeBtn');
+        const analyticsTab = document.getElementById('analyticsTab');
+        
+        if (this.currentMode === 'pro') {
+            currentModeEl.textContent = 'Pro 모드';
+            currentModeEl.style.color = '#28a745';
+            upgradeBtnEl.textContent = 'Free 모드로 변경';
+            upgradeBtnEl.className = 'mode-toggle-btn pro-active';
+            analyticsTab.classList.remove('disabled');
+        } else {
+            currentModeEl.textContent = 'Free 모드';
+            currentModeEl.style.color = '#6c757d';
+            upgradeBtnEl.textContent = 'Pro 모드로 업그레이드';
+            upgradeBtnEl.className = 'mode-toggle-btn';
+            analyticsTab.classList.add('disabled');
+        }
+    },
     
     // 수익 표시 업데이트
     updateRevenueDisplay: function() {
