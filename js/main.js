@@ -14,10 +14,11 @@ window.AppState = {
         french: { likes: 0, comments: 0, follows: 0, targets: { likes: 10, comments: 3, follows: 2 } }
     },
     totalGoals: {
-        likes: 0, comments: 0, follows: 0,
-        targets: { likes: 37, comments: 12, follows: 8 }
-    },
-    accountList: [],
+    likes: 0, comments: 0, follows: 0,
+    targets: { likes: 37, comments: 12, follows: 8 }
+},
+accountList: [],
+accountGoals: {}, // 계정별 개별 목표
     
     // 앱 초기화
     initialize: function() {
@@ -30,18 +31,19 @@ window.AppState = {
 saveAppState: function() {
     try {
         localStorage.setItem('appState', JSON.stringify({
-            currentMode: this.currentMode,
-            revenue: this.revenue,
-            dailyGoals: this.dailyGoals,
-            totalGoals: this.totalGoals,
-            accountList: this.accountList
-        }));
+    currentMode: this.currentMode,
+    revenue: this.revenue,
+    dailyGoals: this.dailyGoals,
+    totalGoals: this.totalGoals,
+    accountList: this.accountList,
+    accountGoals: this.accountGoals
+}));
     } catch (e) {
         console.log('상태 저장 오류:', e);
     }
 },
-    
-   // 앱 상태 로드
+
+// 앱 상태 로드
 loadAppState: function() {
     try {
         const saved = localStorage.getItem('appState');
@@ -52,6 +54,7 @@ loadAppState: function() {
             this.dailyGoals = { ...this.dailyGoals, ...state.dailyGoals };
             this.totalGoals = { ...this.totalGoals, ...state.totalGoals };
             this.accountList = state.accountList || [];
+            this.accountGoals = state.accountGoals || {}; // 계정별 목표 데이터 로드
         }
     } catch (e) {
         console.log('상태 로드 오류:', e);
