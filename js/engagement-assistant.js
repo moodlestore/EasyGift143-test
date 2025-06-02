@@ -39,59 +39,91 @@ ${mode === 'pro' ? `
     </div>
     
     <!-- 6:4 비율 레이아웃 -->
-    <div style="display: flex; gap: 20px; align-items: flex-start;">
-        <!-- 왼쪽 영역 (60%) - 통합 현황 -->
-        <div style="flex: 6; background: white; padding: 20px; border-radius: 8px; border: 2px solid #667eea;">
-            <h3 style="margin: 0 0 20px 0; text-align: center;">📊 전체 현황</h3>
-            
-            <div class="goal-item">
-                <span>좋아요:</span>
+<div style="display: flex; gap: 20px; align-items: stretch; min-height: 500px;">
+    <!-- 왼쪽 영역 (60%) - 선택된 계정 현황 -->
+    <div style="flex: 6; background: white; padding: 25px; border-radius: 8px; border: 2px solid #667eea; display: flex; flex-direction: column;">
+        <h3 style="margin: 0 0 25px 0; text-align: center; font-size: 1.4em;">📊 <span id="selectedAccountName">전체 현황</span></h3>
+        
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+            <div class="goal-item" style="margin-bottom: 25px;">
+                <span style="font-size: 1.2em;">좋아요:</span>
                 <div class="goal-controls">
-                    <button onclick="EngagementAssistant.updateTotalGoal('likes', -1)">-</button>
-                    <span id="total-likes">0</span>/<span id="total-likes-target">37</span>
-                    <button onclick="EngagementAssistant.updateTotalGoal('likes', 1)">+</button>
+                    <button onclick="EngagementAssistant.updateCurrentGoal('likes', -1)" style="width: 40px; height: 40px; font-size: 18px;">-</button>
+                    <span id="current-likes" style="font-size: 1.3em; min-width: 80px;">0</span>/<span id="current-likes-target" style="font-size: 1.1em;">0</span>
+                    <button onclick="EngagementAssistant.updateCurrentGoal('likes', 1)" style="width: 40px; height: 40px; font-size: 18px;">+</button>
                 </div>
             </div>
-            <div class="goal-item">
-                <span>댓글:</span>
+            <div class="goal-item" style="margin-bottom: 25px;">
+                <span style="font-size: 1.2em;">댓글:</span>
                 <div class="goal-controls">
-                    <button onclick="EngagementAssistant.updateTotalGoal('comments', -1)">-</button>
-                    <span id="total-comments">0</span>/<span id="total-comments-target">12</span>
-                    <button onclick="EngagementAssistant.updateTotalGoal('comments', 1)">+</button>
+                    <button onclick="EngagementAssistant.updateCurrentGoal('comments', -1)" style="width: 40px; height: 40px; font-size: 18px;">-</button>
+                    <span id="current-comments" style="font-size: 1.3em; min-width: 80px;">0</span>/<span id="current-comments-target" style="font-size: 1.1em;">0</span>
+                    <button onclick="EngagementAssistant.updateCurrentGoal('comments', 1)" style="width: 40px; height: 40px; font-size: 18px;">+</button>
                 </div>
             </div>
-            <div class="goal-item">
-                <span>팔로우:</span>
+            <div class="goal-item" style="margin-bottom: 25px;">
+                <span style="font-size: 1.2em;">팔로우:</span>
                 <div class="goal-controls">
-                    <button onclick="EngagementAssistant.updateTotalGoal('follows', -1)">-</button>
-                    <span id="total-follows">0</span>/<span id="total-follows-target">8</span>
-                    <button onclick="EngagementAssistant.updateTotalGoal('follows', 1)">+</button>
+                    <button onclick="EngagementAssistant.updateCurrentGoal('follows', -1)" style="width: 40px; height: 40px; font-size: 18px;">-</button>
+                    <span id="current-follows" style="font-size: 1.3em; min-width: 80px;">0</span>/<span id="current-follows-target" style="font-size: 1.1em;">0</span>
+                    <button onclick="EngagementAssistant.updateCurrentGoal('follows', 1)" style="width: 40px; height: 40px; font-size: 18px;">+</button>
                 </div>
             </div>
             
-            <div class="progress-bar" style="margin-top: 15px;">
-                <div class="progress-fill" id="total-progress" style="width: 0%;"></div>
-            </div>
-            
-            <div style="text-align: center; margin-top: 15px;">
-                <button onclick="EngagementAssistant.resetDailyGoals()" style="background: #dc3545; font-size: 14px; padding: 8px 16px;">🔄 목표 초기화</button>
-                <button onclick="EngagementAssistant.completeAllGoals()" style="background: #28a745; font-size: 14px; padding: 8px 16px;">✅ 모든 목표 완료</button>
+            <div class="progress-bar" style="margin: 20px 0; height: 15px;">
+                <div class="progress-fill" id="current-progress" style="width: 0%;"></div>
             </div>
         </div>
         
-        <!-- 오른쪽 영역 (40%) - 계정 관리 -->
-        <div style="flex: 4; background: white; padding: 20px; border-radius: 8px; border: 2px solid #28a745;">
-            <h3 style="margin: 0 0 20px 0; text-align: center;">⚙️ 계정 관리</h3>
-            
-            <!-- SNS 선택 -->
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label for="snsSelect" style="font-size: 14px; margin-bottom: 5px;">SNS 플랫폼:</label>
-                <select id="snsSelect" style="padding: 8px; font-size: 14px;">
-                    <option value="instagram">📷 Instagram</option>
-                    <option value="x">🐦 X (Twitter)</option>
-                    <option value="threads">🧵 Threads</option>
-                </select>
-            </div>
+        <div style="text-align: center; margin-top: auto;">
+            <button onclick="EngagementAssistant.resetDailyGoals()" style="background: #dc3545; font-size: 16px; padding: 12px 20px; margin: 5px;">🔄 목표 초기화</button>
+            <button onclick="EngagementAssistant.completeAllGoals()" style="background: #28a745; font-size: 16px; padding: 12px 20px; margin: 5px;">✅ 모든 목표 완료</button>
+        </div>
+    </div>
+    
+    <!-- 오른쪽 영역 (40%) - 계정 관리 -->
+    <div style="flex: 4; background: white; padding: 25px; border-radius: 8px; border: 2px solid #28a745; display: flex; flex-direction: column;">
+        <h3 style="margin: 0 0 25px 0; text-align: center; font-size: 1.4em;">⚙️ 계정 관리</h3>
+        
+        <!-- SNS 선택 -->
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label for="snsSelect" style="font-size: 16px; margin-bottom: 8px;">SNS 플랫폼:</label>
+            <select id="snsSelect" style="padding: 12px; font-size: 16px;">
+                <option value="instagram">📷 Instagram</option>
+                <option value="x">🐦 X (Twitter)</option>
+                <option value="threads">🧵 Threads</option>
+            </select>
+        </div>
+        
+        <!-- 언어 선택 -->
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label for="languageSelect" style="font-size: 16px; margin-bottom: 8px;">언어:</label>
+            <select id="languageSelect" style="padding: 12px; font-size: 16px;">
+                <option value="korean">🇰🇷 한국어</option>
+                <option value="japanese">🇯🇵 일본어</option>
+                <option value="french">🇫🇷 프랑스어</option>
+            </select>
+        </div>
+        
+        <!-- 추가/제거 버튼 -->
+        <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+            <button onclick="EngagementAssistant.addAccount()" style="flex: 1; background: #28a745; font-size: 16px; padding: 12px;">➕ 추가</button>
+            <button onclick="EngagementAssistant.removeAccount()" style="flex: 1; background: #dc3545; font-size: 16px; padding: 12px;">➖ 제거</button>
+        </div>
+        
+        <!-- 계정 목록 -->
+        <div style="margin-bottom: 15px;">
+            <label style="font-size: 16px; margin-bottom: 8px;">활성 계정 목록:</label>
+        </div>
+        <select id="accountList" size="8" style="width: 100%; font-size: 16px; padding: 8px; flex: 1;" onchange="EngagementAssistant.selectAccount()">
+            <!-- 동적으로 채워짐 -->
+        </select>
+        
+        <div style="text-align: center; margin-top: 15px;">
+            <button onclick="EngagementAssistant.saveAccountList()" style="background: #667eea; font-size: 14px; padding: 10px 16px;">💾 목록 저장</button>
+        </div>
+    </div>
+</div>
             
             <!-- 언어 선택 -->
             <div class="form-group" style="margin-bottom: 15px;">
@@ -163,7 +195,8 @@ ${mode === 'pro' ? `
     },
 
     // 초기화
-    initialize: function() {
+ initialize: function() {
+    this.checkMidnightReset(); // 자정 리셋 체크
     this.restoreGoalsState();
     this.initializeAccountList();
     AppState.templates = this.templates; // 템플릿을 AppState에도 저장
@@ -557,5 +590,177 @@ getAccountDisplayName: function(sns, language) {
     };
     
     return `${snsIcons[sns]}${languageIcons[language]} ${snsNames[sns]} - ${languageNames[language]}`;
+},
+    // 현재 선택된 계정 변수
+currentSelectedAccount: null,
+
+// 계정 선택 함수
+selectAccount: function() {
+    const accountList = document.getElementById('accountList');
+    const selectedOption = accountList.options[accountList.selectedIndex];
+    
+    if (selectedOption) {
+        this.currentSelectedAccount = selectedOption.value;
+        this.updateCurrentAccountDisplay();
+    }
+},
+
+// 현재 계정 표시 업데이트
+updateCurrentAccountDisplay: function() {
+    if (!this.currentSelectedAccount) {
+        document.getElementById('selectedAccountName').textContent = '계정을 선택하세요';
+        return;
+    }
+    
+    const [sns, language] = this.currentSelectedAccount.split('-');
+    const displayName = this.getAccountDisplayName(sns, language);
+    document.getElementById('selectedAccountName').textContent = displayName;
+    
+    // 해당 계정의 목표 데이터 가져오기
+    const accountGoals = this.getAccountGoals(this.currentSelectedAccount);
+    
+    // UI 업데이트
+    document.getElementById('current-likes').textContent = accountGoals.likes;
+    document.getElementById('current-likes-target').textContent = accountGoals.targets.likes;
+    document.getElementById('current-comments').textContent = accountGoals.comments;
+    document.getElementById('current-comments-target').textContent = accountGoals.targets.comments;
+    document.getElementById('current-follows').textContent = accountGoals.follows;
+    document.getElementById('current-follows-target').textContent = accountGoals.targets.follows;
+    
+    this.updateCurrentProgress();
+},
+
+// 계정별 목표 가져오기
+getAccountGoals: function(accountKey) {
+    if (!AppState.accountGoals) {
+        AppState.accountGoals = {};
+    }
+    
+    if (!AppState.accountGoals[accountKey]) {
+        // 기본 목표 설정 (계정별로 다르게 설정 가능)
+        const [sns, language] = accountKey.split('-');
+        AppState.accountGoals[accountKey] = {
+            likes: 0, comments: 0, follows: 0,
+            targets: this.getDefaultTargets(sns, language)
+        };
+    }
+    
+    return AppState.accountGoals[accountKey];
+},
+
+// 기본 목표 설정
+getDefaultTargets: function(sns, language) {
+    const baseTargets = {
+        instagram: { likes: 5, comments: 2, follows: 1 },
+        x: { likes: 3, comments: 1, follows: 1 },
+        threads: { likes: 4, comments: 1, follows: 1 }
+    };
+    
+    return baseTargets[sns] || { likes: 3, comments: 1, follows: 1 };
+},
+
+// 현재 계정 목표 업데이트
+updateCurrentGoal: function(type, change) {
+    if (!this.currentSelectedAccount) {
+        Utils.showAchievement('계정을 먼저 선택해주세요.', 'error');
+        return;
+    }
+    
+    const accountGoals = this.getAccountGoals(this.currentSelectedAccount);
+    const current = accountGoals[type];
+    const target = accountGoals.targets[type];
+    const newValue = Math.max(0, Math.min(target, current + change));
+    
+    accountGoals[type] = newValue;
+    
+    // UI 업데이트
+    document.getElementById(`current-${type}`).textContent = newValue;
+    this.updateCurrentProgress();
+    
+    // 목표 달성 체크
+    if (newValue === target) {
+        Utils.showAchievement(`${this.currentSelectedAccount} ${type} 목표 달성! 🎉`);
+    }
+    
+    AppState.saveAppState();
+},
+
+// 현재 계정 진행률 업데이트
+updateCurrentProgress: function() {
+    if (!this.currentSelectedAccount) return;
+    
+    const accountGoals = this.getAccountGoals(this.currentSelectedAccount);
+    const totalCurrent = accountGoals.likes + accountGoals.comments + accountGoals.follows;
+    const totalTarget = accountGoals.targets.likes + accountGoals.targets.comments + accountGoals.targets.follows;
+    const percentage = totalTarget > 0 ? (totalCurrent / totalTarget) * 100 : 0;
+    
+    document.getElementById('current-progress').style.width = `${percentage}%`;
+    
+    // 완료 시 색상 변경
+    const progressBar = document.getElementById('current-progress');
+    if (percentage >= 100) {
+        progressBar.style.background = '#28a745';
+    } else {
+        progressBar.style.background = 'linear-gradient(45deg, #667eea, #764ba2)';
+    }
+    
+    // 전체 진행률도 업데이트
+    this.updateTotalProgress();
+},
+
+// 전체 진행률 업데이트 (수정)
+updateTotalProgress: function() {
+    let totalCurrent = 0;
+    let totalTarget = 0;
+    
+    AppState.accountList.forEach(accountKey => {
+        const accountGoals = this.getAccountGoals(accountKey);
+        totalCurrent += accountGoals.likes + accountGoals.comments + accountGoals.follows;
+        totalTarget += accountGoals.targets.likes + accountGoals.targets.comments + accountGoals.targets.follows;
+    });
+    
+    const percentage = totalTarget > 0 ? Math.round((totalCurrent / totalTarget) * 100) : 0;
+    document.getElementById('overallProgress').textContent = `${percentage}%`;
+    
+    if (percentage >= 100) {
+        Utils.showAchievement('🎉 모든 목표 달성! 오늘 정말 수고하셨습니다!');
+    }
+},
+
+// 계정 목록 저장
+saveAccountList: function() {
+    AppState.saveAppState();
+    Utils.showAchievement('계정 목록이 저장되었습니다! 💾');
+},
+
+// 자정 리셋 체크
+checkMidnightReset: function() {
+    const lastResetDate = Utils.safeStorage.get('lastResetDate', '');
+    const today = new Date().toDateString();
+    
+    if (lastResetDate !== today) {
+        this.resetAllGoals();
+        Utils.safeStorage.set('lastResetDate', today);
+        Utils.showAchievement('자정이 지나 목표가 자동으로 리셋되었습니다! 🌅');
+    }
+},
+
+// 모든 목표 리셋
+resetAllGoals: function() {
+    // 모든 계정 목표 리셋
+    if (AppState.accountGoals) {
+        Object.keys(AppState.accountGoals).forEach(accountKey => {
+            AppState.accountGoals[accountKey].likes = 0;
+            AppState.accountGoals[accountKey].comments = 0;
+            AppState.accountGoals[accountKey].follows = 0;
+        });
+    }
+    
+    // UI 업데이트
+    if (this.currentSelectedAccount) {
+        this.updateCurrentAccountDisplay();
+    }
+    
+    AppState.saveAppState();
 }
 };
