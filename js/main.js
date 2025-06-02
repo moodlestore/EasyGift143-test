@@ -91,7 +91,7 @@ toggleModeSwitch: function() {
         }
     }
 },
-
+    
 // updateModeDisplay 함수 수정
 updateModeDisplay: function() {
     const toggle = document.getElementById('modeToggle');
@@ -107,27 +107,6 @@ updateModeDisplay: function() {
         analyticsTab.classList.add('disabled');
     }
 },
-    
-    // 모드 표시 업데이트
-    updateModeDisplay: function() {
-        const currentModeEl = document.getElementById('currentMode');
-        const upgradeBtnEl = document.getElementById('upgradeModeBtn');
-        const analyticsTab = document.getElementById('analyticsTab');
-        
-        if (this.currentMode === 'pro') {
-            currentModeEl.textContent = 'Pro 모드';
-            currentModeEl.style.color = '#28a745';
-            upgradeBtnEl.textContent = 'Free 모드로 변경';
-            upgradeBtnEl.className = 'mode-toggle-btn pro-active';
-            analyticsTab.classList.remove('disabled');
-        } else {
-            currentModeEl.textContent = 'Free 모드';
-            currentModeEl.style.color = '#6c757d';
-            upgradeBtnEl.textContent = 'Pro 모드로 업그레이드';
-            upgradeBtnEl.className = 'mode-toggle-btn';
-            analyticsTab.classList.add('disabled');
-        }
-    },
     
     // 수익 표시 업데이트
     updateRevenueDisplay: function() {
