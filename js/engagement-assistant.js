@@ -15,29 +15,7 @@ window.EngagementAssistant = {
         return `
             <div class="section">
                 <h2>📈 SNS 성장 도우미 (${mode.toUpperCase()} 모드)</h2>
-                
-                ${mode === 'free' ? `
-                    <div style="background: #e7f3ff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                        <h3>🆓 Free 모드 기능</h3>
-                        <ul>
-                            <li>✅ 업계 표준 기반 일일 목표</li>
-                            <li>✅ 3개 언어 번역 어시스턴트</li>
-                            <li>✅ 댓글 템플릿 생성기</li>
-                            <li>✅ 수동 데이터 입력</li>
-                        </ul>
-                    </div>
-                ` : `
-                    <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                        <h3>💎 Pro 모드 기능</h3>
-                        <ul>
-                            <li>✅ AI 기반 맞춤 목표 설정</li>
-                            <li>✅ Buffer Analytics 연동</li>
-                            <li>✅ ManyChat Analytics 연동</li>
-                            <li>✅ 실시간 성과 분석</li>
-                        </ul>
-                    </div>
-                `}
-                
+                              
                 <!-- 일일 목표 섹션 -->
                 <div class="section">
                     <h2>🎯 오늘의 목표</h2>
