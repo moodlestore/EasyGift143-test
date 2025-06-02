@@ -13,11 +13,13 @@
         <header class="dashboard-header">
             <h1>🎁 EasyGift143 통합 대시보드</h1>
             <div class="mode-selector">
-                <span class="mode-label" id="currentMode">Free 모드</span>
-                <button id="upgradeModeBtn" class="mode-toggle-btn" onclick="AppState.toggleMode()">
-                    Pro 모드로 업그레이드
-                </button>
-            </div>
+    <span class="mode-label">Free</span>
+    <label class="mode-toggle">
+        <input type="checkbox" id="modeToggle" onchange="AppState.toggleModeSwitch()">
+        <span class="toggle-slider"></span>
+    </label>
+    <span class="mode-label">Pro</span>
+</div>
         </header>
 
         <!-- 네비게이션 탭 -->
