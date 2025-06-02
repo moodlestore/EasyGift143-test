@@ -13,13 +13,11 @@
         <header class="dashboard-header">
             <h1>🎁 EasyGift143 통합 대시보드</h1>
             <div class="mode-selector">
-    <span class="mode-label">Free</span>
-    <label class="mode-toggle">
-        <input type="checkbox" id="modeToggle" onchange="AppState.toggleModeSwitch()">
-        <span class="toggle-slider"></span>
-    </label>
-    <span class="mode-label">Pro</span>
-</div>
+                <span class="mode-label" id="currentMode">Free 모드</span>
+                <button id="upgradeModeBtn" class="mode-toggle-btn" onclick="AppState.toggleMode()">
+                    Pro 모드로 업그레이드
+                </button>
+            </div>
         </header>
 
         <!-- 네비게이션 탭 -->
@@ -28,6 +26,7 @@
                 📝 제품 등록
             </button>
             <button class="nav-tab" data-page="engagement-assistant">
+                💬 인게이지먼트 어시스턴트
                 📈 SNS 성장 도우미
             </button>
             <button class="nav-tab disabled" data-page="analytics-dashboard" id="analyticsTab">
@@ -42,7 +41,7 @@
                 <div class="loading-spinner"></div>
                 <p>페이지를 로드하는 중...</p>
             </div>
-            
+
             <div id="page-content" class="page-content">
                 <!-- 동적 페이지 로드 영역 -->
             </div>
@@ -81,7 +80,7 @@
                         <strong id="totalRevenue">$0</strong>
                     </div>
                 </div>
-                
+
                 <div class="upgrade-threshold">
                     <p><strong>Pro 모드 권장 기준:</strong> 월 $50 이상</p>
                     <div class="progress-bar">
@@ -119,14 +118,14 @@
     <script src="js/product-register.js"></script>
     <script src="js/engagement-assistant.js"></script>
     <script src="js/analytics.js"></script>
-    
+
     <script>
         // 앱 초기화
         document.addEventListener('DOMContentLoaded', function() {
             AppState.initialize();
             Navigation.setupNavigation();
-            AppState.updateModeDisplay();
-            
+            AppState.updateModeDisplay();More actions
+
             // 기본적으로 제품 등록 페이지 표시
             Navigation.showPage('product-register');
         });
