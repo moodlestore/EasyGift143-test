@@ -14,7 +14,7 @@ window.EngagementAssistant = {
         
         return `
             <div class="section">
-                <h2>💬 인게이지먼트 어시스턴트 (${mode.toUpperCase()} 모드)</h2>
+                <h2>📈 SNS 성장 도우미 (${mode.toUpperCase()} 모드)</h2>
                 
                 ${mode === 'free' ? `
                     <div style="background: #e7f3ff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
