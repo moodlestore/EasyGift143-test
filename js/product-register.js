@@ -438,4 +438,354 @@ window.ProductRegister = {
         const content = this.buildMessageContent();
         
         if (!url) {
-            this.ad
+            this.addLogEntry(`${this.getWebhookLabel(urlFieldId)} URL을 입력하고 저장해주세요.`, 'error');
+            this.isTransferInProgress = false;
+            this.toggleFormFields(false);
+            return;
+        }
+
+        const allFiles = [...this.infoFiles, ...this.postFiles];
+
+        const discordMessage = {
+            content: content,
+            author: {
+                id: "123456789",
+                username: "testuser", 
+                discriminator: "0001"
+            },
+            timestamp: new Date().toISOString(),
+            attachments: allFiles.map((file, index) => ({
+                id: `img${index.toString().padStart(3, '0')}`,
+                filename: file.name,
+                size: file.size,
+                url: null,
+                content_type: file.type || 'image/png',
+                base64: file.base64Data ? file.base64Data.split(',')[1] : null,
+                is_local_file: true
+            }))
+        };
+
+        const startTime = Date.now();
+        const webhookLabel = this.getWebhookLabel(urlFieldId);
+        this.addLogEntry(`${webhookLabel} 전송 중...`, 'info');
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(discordMessage)
+        })
+        .then(response => {
+            const endTime = Date.now();
+            const duration = endTime - startTime;
+            
+            return response.text().then(text => {
+                let message = `${webhookLabel}\n상태: ${response.status} ${response.statusText}\n응답 시간: ${duration}ms`;
+                let responseData = null;
+                
+                if (text) {
+                    try {
+                        responseData = JSON.parse(text);
+                        if (responseData.message) {
+                            message += `\n메시지: ${responseData.message}`;
+                        }
+                    } catch (e) {
+                        message += `\n응답 내용: ${text}`;
+                        
+                        // JSON 파싱 실패 시에도 success와 Product_ID 체크 시도
+                        if (text.includes('success') || text.includes('"status":"success"')) {
+                            const productIdMatch = text.match(/"Product_ID":\s*"?([^",}]+)"?/);
+                            let extractedProductId = null;
+                            
+                            if (productIdMatch) {
+                                extractedProductId = productIdMatch[1].trim();
+                            }
+                            
+                            responseData = { 
+                                status: 'success', 
+                                message: '텍스트 파싱을 통한 성공 감지',
+                                Product_ID: extractedProductId
+                            };
+                        }
+                    }
+                }
+                
+                // 웹훅 1에서 success 응답 받으면 3초 지연 후 웹훅 2 전송
+                if (responseData && responseData.status === 'success' && urlFieldId === 'webhookUrl1') {
+                    this.addLogEntry(message, response.ok ? 'success' : 'error');
+                    this.addLogEntry('🎉 Make.com 워크플로우 완료! 3초 후 웹훅 2 (Buffer) 전송...', 'success');
+                    
+                    // 3초 지연 후 웹훅 2 호출
+                    setTimeout(() => {
+                        this.addLogEntry('🚀 웹훅 2 (Buffer) 전송 시작...', 'info');
+                        
+                        const productId = responseData.Product_ID || null;
+                        
+                        if (productId) {
+                            this.sendWebhookWithProductID('webhookUrl2', productId);
+                        } else {
+                            this.addLogEntry('❌ Product_ID를 찾을 수 없어서 웹훅 2 전송을 중단합니다.', 'error');
+                            this.isTransferInProgress = false;
+                            this.toggleFormFields(false);
+                        }
+                    }, 3000);
+                    
+                    // 히스토리 저장
+                    this.saveToHistory({
+                        url: url,
+                        webhookType: webhookLabel,
+                        method: 'POST',
+                        data: JSON.stringify(discordMessage),
+                        status: response.status,
+                        success: response.ok,
+                        timestamp: new Date().toISOString(),
+                        duration: duration,
+                        response: responseData
+                    });
+                    
+                    return;
+                }
+                
+                this.saveToHistory({
+                    url: url,
+                    webhookType: webhookLabel,
+                    method: 'POST',
+                    data: JSON.stringify(discordMessage),
+                    status: response.status,
+                    success: response.ok,
+                    timestamp: new Date().toISOString(),
+                    duration: duration,
+                    response: responseData
+                });
+                
+                this.addLogEntry(message, response.ok ? 'success' : 'error');
+                
+                if (!response.ok) {
+                    this.isTransferInProgress = false;
+                    this.toggleFormFields(false);
+                }
+            });
+        })
+        .catch(error => {
+            const endTime = Date.now();
+            const duration = endTime - startTime;
+            
+            const errorMessage = `${webhookLabel}\n상태: 네트워크 오류\n메시지: ${error.message}\n응답 시간: ${duration}ms`;
+            
+            this.saveToHistory({
+                url: url,
+                webhookType: webhookLabel,
+                method: 'POST',
+                data: JSON.stringify(discordMessage),
+                error: error.message,
+                success: false,
+                timestamp: new Date().toISOString(),
+                duration: duration
+            });
+            
+            this.addLogEntry(errorMessage, 'error');
+            this.isTransferInProgress = false;
+            this.toggleFormFields(false);
+        });
+    },
+    
+    // 웹훅 2 전송 (Product_ID 기반)
+    sendWebhookWithProductID: function(urlFieldId, productId) {
+        const url = document.getElementById(urlFieldId).value.trim();
+        
+        if (!url) {
+            this.addLogEntry(`${this.getWebhookLabel(urlFieldId)} URL을 입력하고 저장해주세요.`, 'error');
+            this.isTransferInProgress = false;
+            this.toggleFormFields(false);
+            return;
+        }
+
+        if (!productId) {
+            this.addLogEntry('Product_ID가 없습니다. 웹훅 2 전송을 중단합니다.', 'error');
+            this.isTransferInProgress = false;
+            this.toggleFormFields(false);
+            return;
+        }
+
+        // Product_ID로 메시지 구성
+        const simpleMessage = {
+            content: `[Product_ID]${productId}`,
+            author: {
+                id: "123456789",
+                username: "testuser", 
+                discriminator: "0001"
+            },
+            timestamp: new Date().toISOString(),
+            attachments: []
+        };
+
+        const startTime = Date.now();
+        const webhookLabel = this.getWebhookLabel(urlFieldId);
+        
+        this.addLogEntry(`${webhookLabel} 전송 중... (Product_ID: ${productId})`, 'info');
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(simpleMessage)
+        })
+        .then(response => {
+            const endTime = Date.now();
+            const duration = endTime - startTime;
+            
+            return response.text().then(text => {
+                let message = `${webhookLabel}\n상태: ${response.status} ${response.statusText}\n응답 시간: ${duration}ms`;
+                
+                if (text) {
+                    try {
+                        const responseData = JSON.parse(text);
+                        
+                        if (responseData.message) {
+                            this.addLogEntry(`🎉 ${responseData.message}`, responseData.status === 'success' ? 'success' : 'error');
+                        }
+                        
+                        this.isTransferInProgress = false;
+                        this.toggleFormFields(false);
+                        
+                    } catch (e) {
+                        message += `\n응답 내용: ${text}`;
+                        this.isTransferInProgress = false;
+                        this.toggleFormFields(false);
+                    }
+                } else {
+                    this.isTransferInProgress = false;
+                    this.toggleFormFields(false);
+                }
+                
+                this.saveToHistory({
+                    url: url,
+                    webhookType: webhookLabel + ' (Product_ID 전송)',
+                    method: 'POST',
+                    data: JSON.stringify(simpleMessage),
+                    status: response.status,
+                    success: response.ok,
+                    timestamp: new Date().toISOString(),
+                    duration: duration,
+                    response: text,
+                    productName: productId
+                });
+                
+                this.addLogEntry(message, response.ok ? 'success' : 'error');
+            });
+        })
+        .catch(error => {
+            const endTime = Date.now();
+            const duration = endTime - startTime;
+            
+            const errorMessage = `${webhookLabel}\n상태: 네트워크 오류\n메시지: ${error.message}\n응답 시간: ${duration}ms`;
+            
+            this.saveToHistory({
+                url: url,
+                webhookType: webhookLabel + ' (Product_ID 전송)',
+                method: 'POST',
+                data: JSON.stringify(simpleMessage),
+                error: error.message,
+                success: false,
+                timestamp: new Date().toISOString(),
+                duration: duration,
+                productName: productId
+            });
+            
+            this.addLogEntry(errorMessage, 'error');
+            this.isTransferInProgress = false;
+            this.toggleFormFields(false);
+        });
+    },
+    
+    // 히스토리에 저장
+    saveToHistory: function(record) {
+        // JSON 데이터에서 상품명 추출
+        if (!record.productName) {
+            try {
+                const messageData = JSON.parse(record.data);
+                const content = messageData.content || '';
+                const productNameMatch = content.match(/\[제품명\]([^\n\[]+)/);
+                record.productName = productNameMatch ? productNameMatch[1].trim() : '';
+            } catch (e) {
+                record.productName = '';
+            }
+        }
+        
+        this.sendHistory.unshift(record);
+        
+        // 1일 지난 기록 자동 정리
+        this.cleanupOldHistory();
+        
+        // 최대 50개 기록 유지
+        if (this.sendHistory.length > 50) {
+            this.sendHistory = this.sendHistory.slice(0, 50);
+        }
+        
+        Utils.safeStorage.set('webhookHistory', JSON.stringify(this.sendHistory));
+    },
+    
+    // 1일 지난 기록 자동 삭제
+    cleanupOldHistory: function() {
+        const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
+        const validHistory = this.sendHistory.filter(record => {
+            try {
+                const recordTime = new Date(record.timestamp).getTime();
+                return recordTime > oneDayAgo;
+            } catch (err) {
+                return true;
+            }
+        });
+        
+        if (validHistory.length !== this.sendHistory.length) {
+            this.sendHistory = validHistory;
+            Utils.safeStorage.set('webhookHistory', JSON.stringify(this.sendHistory));
+        }
+    },
+    
+    // 히스토리 표시
+    displayHistory: function() {
+        const historyDiv = document.getElementById('historyList');
+        if (!historyDiv) return;
+        
+        if (this.sendHistory.length === 0) {
+            historyDiv.innerHTML = '<p>전송 기록이 없습니다.</p>';
+            return;
+        }
+
+        let html = '';
+        this.sendHistory.forEach((record, index) => {
+            try {
+                const timestamp = new Date(record.timestamp).toLocaleString('ko-KR');
+                const timeAgo = Utils.getTimeAgo(record.timestamp);
+                const status = record.error ? `오류: ${record.error}` : `응답: ${record.status}`;
+                const productName = record.productName || '상품명 없음';
+                const webhookType = record.webhookType || '웹훅';
+                
+                html += `
+                    <div class="file-item" style="padding: 10px; margin-bottom: 5px; background: ${record.success ? '#d4edda' : '#f8d7da'}; border-radius: 5px;">
+                        <div>
+                            <strong>${webhookType}</strong> - ${timestamp} (${timeAgo})
+                            <br><strong>상품:</strong> ${productName}
+                            <br>URL: ${record.url ? record.url.substring(0, 60) + '...' : 'N/A'}
+                            <br>${status} (${record.duration}ms)
+                        </div>
+                    </div>
+                `;
+            } catch (err) {
+                console.log('기록 항목 처리 오류:', err);
+            }
+        });
+        historyDiv.innerHTML = html;
+    },
+    
+    // 히스토리 삭제
+    clearHistory: function() {
+        this.sendHistory = [];
+        Utils.safeStorage.remove('webhookHistory');
+        this.displayHistory();
+        this.addLogEntry('전송 기록이 삭제되었습니다.', 'info');
+    }
+};
