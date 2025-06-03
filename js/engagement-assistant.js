@@ -29,26 +29,26 @@ ${mode === 'pro' ? `
     </div>
     
   <!-- 6:4 비율 레이아웃 (높이 30% 축소) -->
-<div style="display: flex; gap: 20px; align-items: stretch; min-height: 154px;">
+<div style="display: flex; gap: 20px; align-items: stretch; min-height: 80px;">
    <!-- 왼쪽 영역 (60%) - 선택된 계정 현황 -->
    <div style="flex: 6; background: white; padding: 20px; border-radius: 8px; border: 2px solid #667eea; display: flex; flex-direction: column; position: relative;">
        <!-- 좌측 상단: 날짜 -->
-       <div style="position: absolute; top: 15px; left: 20px;">
+       <div style="position: absolute; top: 10px; left: 20px;">
            <div style="color: #666; font-size: 16px; font-weight: bold;">2024.06.03</div>
        </div>
        
        <!-- 우측 상단: 총 진행률 (오른쪽으로 이동) -->
-       <div style="position: absolute; top: 15px; right: 20px; font-size: 1.1em; color: #667eea;">
+       <div style="position: absolute; top: 10px; right: 20px; font-size: 1.1em; color: #667eea;">
             <strong>총 진행률:</strong> <span id="overallProgress" style="font-size: 1.2em; color: #333;">0%</span>
         </div>
        
        <!-- 상단 중앙: 계정명 (아래로 이동) -->
-       <div style="text-align: center; margin-top: 45px; margin-bottom: 20px;">
+       <div style="text-align: center; margin-top: 55px; margin-bottom: 20px;">
            <h3 style="margin: 0; font-size: 1.6em; color: #333;"><span id="selectedAccountName">계정을 선택하세요</span></h3>
        </div>
        
        <!-- 중앙: 목표 상세 (왼쪽으로 이동, 간격 확대, 폰트 키움) -->
-       <div style="position: absolute; top: 50%; left: 40px; transform: translateY(-50%); display: flex; flex-direction: column; gap: 18px;">
+       <div style="position: absolute; top: 60%; left: 40px; transform: translateY(-50%); display: flex; flex-direction: column; gap: 50px;">
            <div style="display: flex; align-items: center; justify-content: flex-start; min-width: 300px;">
                <div style="font-size: 1.3em; color: #666; font-weight: bold; width: 80px;">좋아요</div>
                <div class="goal-controls" style="display: flex; align-items: center; gap: 8px;">
@@ -90,8 +90,8 @@ ${mode === 'pro' ? `
        </div>
        
        <!-- 우측: 캐릭터와 진행률 바 -->
-       <div style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 15px;">
-           <div style="width: 30px; height: 150px; background: #e9ecef; border-radius: 15px; position: relative; border: 2px solid #dee2e6;">
+       <div style="position: absolute; right: 20px; top: 60%; transform: translateY(-50%); display: flex; align-items: center; gap: 15px;">
+           <div style="width: 30px; height: 200px; background: #e9ecef; border-radius: 15px; position: relative; border: 2px solid #dee2e6;">
                <div id="verticalProgress" style="position: absolute; bottom: 0; width: 100%; background: #28a745; border-radius: 13px; transition: height 0.3s ease; height: 0%;"></div>
            </div>
            <div id="progressCharacter" style="font-size: 3.5em;">😴</div>
@@ -99,11 +99,11 @@ ${mode === 'pro' ? `
    </div>
     
     <!-- 오른쪽 영역 (40%) - 계정 관리 (높이 30% 축소) -->
-    <div style="flex: 4; background: white; padding: 20px; border-radius: 8px; border: 2px solid #28a745; display: flex; flex-direction: column; min-height: 114px;">
-        <h3 style="margin: 0 0 20px 0; text-align: center; font-size: 1.3em;">⚙️ 계정 관리</h3>
+    <div style="flex: 4; background: white; padding: 20px; border-radius: 8px; border: 2px solid #28a745; display: flex; flex-direction: column; min-height: 60px;">
+        <h3 style="margin: 0 0 10px 0; text-align: center; font-size: 1.3em;">⚙️ 계정 관리</h3>
         
         <!-- SNS 선택 -->
-        <div class="form-group" style="margin-bottom: 15px;">
+        <div class="form-group" style="margin-bottom: 8px;">
             <label for="snsSelect" style="font-size: 14px; margin-bottom: 5px;">SNS 플랫폼:</label>
             <select id="snsSelect" style="padding: 10px; font-size: 14px;">
                 <option value="instagram">Instagram</option>
@@ -112,15 +112,16 @@ ${mode === 'pro' ? `
             </select>
         </div>
         
-        <!-- 언어 선택 -->
-        <div class="form-group" style="margin-bottom: 15px;">
-            <label for="languageSelect" style="font-size: 14px; margin-bottom: 5px;">언어:</label>
-            <select id="languageSelect" style="padding: 10px; font-size: 14px;">
-                <option value="korean">한국어</option>
-                <option value="japanese">일본어</option>
-                <option value="french">프랑스어</option>
-            </select>
-        </div>
+		<!-- 국가 선택 -->
+		<div class="form-group" style="margin-bottom: 15px;">
+			<label for="languageSelect" style="font-size: 14px; margin-bottom: 5px;">국가:</label>
+			<select id="languageSelect" style="padding: 10px; font-size: 14px;">
+				<option value="korea">한국</option>
+				<option value="japan">일본</option>
+				<option value="usa">미국</option>
+				<option value="canada">캐나다</option>
+			</select>
+		</div>
         
         <!-- 추가/제거 버튼 -->
         <div style="display: flex; gap: 10px; margin-bottom: 15px;">
@@ -132,7 +133,7 @@ ${mode === 'pro' ? `
         <div style="margin-bottom: 10px;">
             <label style="font-size: 14px; margin-bottom: 5px;">활성 계정 목록:</label>
         </div>
-        <select id="accountList" size="6" style="width: 100%; font-size: 14px; padding: 5px; flex: 1;" onchange="EngagementAssistant.selectAccount()">
+        <select id="accountList" size="3" style="width: 100%; font-size: 14px; padding: 5px; flex: 1;" onchange="EngagementAssistant.selectAccount()">
             <!-- 동적으로 채워짐 -->
         </select>
         
@@ -143,11 +144,11 @@ ${mode === 'pro' ? `
 </div>
                         
                 <!-- 번역 어시스턴트 섹션 -->
-                <div class="section">
+                <div class="section" style="margin-top: 30px;">
                     <h2>🔤 번역 어시스턴트</h2>
                     <div class="form-group">
                         <label>한국어 댓글 입력:</label>
-                        <textarea id="commentInput" rows="3" placeholder="번역할 댓글을 입력하세요"></textarea>
+                        <textarea id="commentInput" rows="3" placeholder="번역할 문장을 입력하세요"></textarea>
                     </div>
                     <div class="form-group">
                         <label>톤앤매너:</label>
@@ -157,7 +158,7 @@ ${mode === 'pro' ? `
                             <option value="casual">캐주얼</option>
                         </select>
                     </div>
-                    <button onclick="EngagementAssistant.translateComment()">3개 언어로 번역하기</button>
+                    <button onclick="EngagementAssistant.translateComment()">번역하기</button>
                     <div id="translationResult" style="margin-top: 15px;"></div>
                 </div>
             </div>
@@ -368,13 +369,13 @@ ${mode === 'pro' ? `
         return translations[tone] || translations.friendly;
     },
 
-    // 계정 목록 초기화
-    initializeAccountList: function() {
+// 계정 목록 초기화
+initializeAccountList: function() {
     if (!AppState.accountList) {
         AppState.accountList = [
-            'instagram-korean', 'instagram-japanese', 'instagram-french',
-            'x-korean', 'x-japanese', 'x-french',
-            'threads-korean', 'threads-japanese', 'threads-french'
+            'instagram-korea', 'instagram-japan', 'instagram-usa',
+            'x-korea', 'x-japan', 'x-usa',
+            'threads-korea', 'threads-japan', 'threads-usa'
         ];
     }
     this.updateAccountListDisplay();
@@ -483,9 +484,10 @@ getAccountDisplayName: function(sns, language) {
     };
     
     const languageNames = {
-        korean: '한국어',
-        japanese: '일본어',
-        french: '프랑스어'
+        korea: '한국',
+        japan: '일본',
+        usa: '미국',
+        canada: '캐나다'
     };
     
     // 텍스트 정렬을 위해 고정 길이 문자열 사용
