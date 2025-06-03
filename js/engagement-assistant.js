@@ -41,8 +41,8 @@ ${mode === 'pro' ? `
             <h3 style="margin: 0; font-size: 1.4em; color: #333;"><span id="selectedAccountName">계정을 선택하세요</span></h3>
         </div>
         
-        <!-- 중앙: 목표 상세 (가로 배치) -->
-            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; gap: 15px;">
+        <!-- 중앙: 목표 상세 (세로 배치) -->
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; gap: 15px;">
             <div style="text-align: center;">
                 <div style="font-size: 0.9em; color: #666; margin-bottom: 8px;">좋아요</div>
                 <div class="goal-controls">
