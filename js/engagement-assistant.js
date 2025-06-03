@@ -42,7 +42,7 @@ ${mode === 'pro' ? `
         </div>
         
         <!-- 중앙: 목표 상세 (가로 배치) -->
-        <div style="position: absolute; top: 50%; left: 20px; right: 120px; transform: translateY(-50%); display: flex; justify-content: space-between;">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; gap: 15px;">
             <div style="text-align: center;">
                 <div style="font-size: 0.9em; color: #666; margin-bottom: 8px;">좋아요</div>
                 <div class="goal-controls">
