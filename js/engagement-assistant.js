@@ -22,7 +22,7 @@ ${mode === 'pro' ? `
     </div>
 ` : ''}
                 
-           <!-- 일일 목표 섹션 -->
+<!-- 일일 목표 섹션 -->
 <div class="section">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h2 style="margin: 0;">🎯 오늘의 목표</h2>
