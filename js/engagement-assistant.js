@@ -38,9 +38,9 @@ ${mode === 'pro' ? `
        </div>
        
        <!-- 우측 상단: 총 진행률 (오른쪽으로 이동) -->
-       <div style="position: absolute; top: 15px; right: 80px; font-size: 1.1em; color: #667eea;">
-           <strong>총 진행률:</strong> <span id="overallProgress" style="font-size: 1.2em; color: #333;">0%</span>
-       </div>
+       <div style="position: absolute; top: 15px; right: 20px; font-size: 1.1em; color: #667eea;">
+            <strong>총 진행률:</strong> <span id="overallProgress" style="font-size: 1.2em; color: #333;">0%</span>
+        </div>
        
        <!-- 상단 중앙: 계정명 (아래로 이동) -->
        <div style="text-align: center; margin-top: 45px; margin-bottom: 20px;">
