@@ -28,8 +28,6 @@ ${mode === 'pro' ? `
         <h2 style="margin: 0;">🎯 오늘의 목표</h2>
     </div>
     
-   // js/engagement-assistant.js의 getHTML() 함수 내 해당 부분을 수정
-
   <!-- 6:4 비율 레이아웃 (높이 30% 축소) -->
 <div style="display: flex; gap: 20px; align-items: stretch; min-height: 154px;">
    <!-- 왼쪽 영역 (60%) - 선택된 계정 현황 -->
