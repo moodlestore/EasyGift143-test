@@ -28,8 +28,8 @@ ${mode === 'pro' ? `
         <h2 style="margin: 0;">🎯 오늘의 목표</h2>
     </div>
     
-   <!-- 6:4 비율 레이아웃 (높이 30% 축소) -->
-<div style="display: flex; gap: 20px; align-items: stretch; min-height: 154px;">
+   <!-- 6:4 비율 레이아웃 (높이 30% 더 축소) -->
+<div style="display: flex; gap: 20px; align-items: stretch; min-height: 108px;">
     <!-- 왼쪽 영역 (60%) - 선택된 계정 현황 -->
     <div style="flex: 6; background: white; padding: 20px; border-radius: 8px; border: 2px solid #667eea; display: flex; flex-direction: column; position: relative;">
         <!-- 좌측 상단: 날짜 -->
@@ -37,8 +37,8 @@ ${mode === 'pro' ? `
             <div style="color: #666; font-size: 16px; font-weight: bold;">2024.06.03</div>
         </div>
         
-        <!-- 우측 상단: 총 진행률 -->
-        <div style="position: absolute; top: 15px; right: 120px; font-size: 1.1em; color: #667eea;">
+        <!-- 우측 끝: 총 진행률 -->
+        <div style="position: absolute; top: 15px; right: 20px; font-size: 1.1em; color: #667eea;">
             <strong>총 진행률:</strong> <span id="overallProgress" style="font-size: 1.2em; color: #333;">0%</span>
         </div>
         
@@ -47,8 +47,8 @@ ${mode === 'pro' ? `
             <h3 style="margin: 0; font-size: 1.6em; color: #333;"><span id="selectedAccountName">계정을 선택하세요</span></h3>
         </div>
         
-        <!-- 중앙: 목표 상세 (세로 배치, 가로형 컨트롤) -->
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; gap: 12px;">
+        <!-- 중앙: 목표 상세 (세로 배치, 가로형 컨트롤, 왼쪽 이동) -->
+        <div style="position: absolute; top: 50%; left: 30%; transform: translate(-50%, -50%); display: flex; flex-direction: column; gap: 12px;">
             <div style="display: flex; align-items: center; justify-content: space-between; min-width: 250px;">
                 <div style="font-size: 1.1em; color: #666; font-weight: bold; width: 60px;">좋아요</div>
                 <div class="goal-controls" style="display: flex; align-items: center; gap: 8px;">
@@ -98,8 +98,8 @@ ${mode === 'pro' ? `
         </div>
     </div>
     
-    <!-- 오른쪽 영역 (40%) - 계정 관리 (높이 30% 축소) -->
-    <div style="flex: 4; background: white; padding: 20px; border-radius: 8px; border: 2px solid #28a745; display: flex; flex-direction: column; min-height: 114px;">
+    <!-- 오른쪽 영역 (40%) - 계정 관리 (높이 30% 더 축소) -->
+    <div style="flex: 4; background: white; padding: 20px; border-radius: 8px; border: 2px solid #28a745; display: flex; flex-direction: column; min-height: 68px;">
         
         <!-- SNS 선택 -->
         <div class="form-group" style="margin-bottom: 15px;">
