@@ -160,18 +160,6 @@ ${mode === 'pro' ? `
                     <button onclick="EngagementAssistant.translateComment()">3개 언어로 번역하기</button>
                     <div id="translationResult" style="margin-top: 15px;"></div>
                 </div>
-                
-                <!-- 댓글 템플릿 섹션 -->
-                <div class="section">
-                    <h2>📝 댓글 템플릿</h2>
-                    <div class="template-grid">
-                        <button onclick="EngagementAssistant.loadTemplate('praise')" class="praise">👏 칭찬</button>
-                        <button onclick="EngagementAssistant.loadTemplate('question')" class="question">❓ 질문</button>
-                        <button onclick="EngagementAssistant.loadTemplate('empathy')" class="empathy">💭 공감</button>
-                        <button onclick="EngagementAssistant.loadTemplate('recommendation')" class="recommendation">💡 추천</button>
-                    </div>
-                    <div id="templateResult" class="template-result"></div>
-                </div>
             </div>
         `;
     },
@@ -378,65 +366,6 @@ ${mode === 'pro' ? `
         };
         
         return translations[tone] || translations.friendly;
-    },
-
-    // 템플릿 로드
-    loadTemplate: function(category) {
-        const templates = this.templates[category];
-        const result = document.getElementById('templateResult');
-        
-        if (!templates) {
-            result.innerHTML = '<p>템플릿을 찾을 수 없습니다.</p>';
-            return;
-        }
-        
-        const randomTemplate = templates[Math.floor(Math.random() * templates.length)];
-        
-        result.innerHTML = `
-            <div style="background: white; padding: 15px; border-radius: 8px;">
-                <h4>${this.getCategoryName(category)} 템플릿:</h4>
-                <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-left: 4px solid #667eea; font-size: 16px;">
-                    "${randomTemplate}"
-                </div>
-                <div class="template-actions">
-                    <button onclick="Utils.copyText('${randomTemplate}')">📋 복사하기</button>
-                    <button onclick="EngagementAssistant.translateTemplateComment('${randomTemplate}')">🌐 번역하기</button>
-                    <button onclick="EngagementAssistant.loadTemplate('${category}')">🔄 다른 템플릿</button>
-                </div>
-                
-                <details style="margin-top: 15px;">
-                    <summary style="cursor: pointer; font-weight: bold;">모든 ${this.getCategoryName(category)} 템플릿 보기</summary>
-                    <div class="template-list">
-                        ${templates.map(template => `
-                            <div class="template-item">
-                                <span>"${template}"</span>
-                                <button onclick="Utils.copyText('${template}')" style="font-size: 12px; padding: 4px 8px;">복사</button>
-                            </div>
-                        `).join('')}
-                    </div>
-                </details>
-            </div>
-        `;
-    },
-
-    // 카테고리 이름 변환
-    getCategoryName: function(category) {
-        const names = {
-            praise: '칭찬',
-            question: '질문',
-            empathy: '공감',
-            recommendation: '추천'
-        };
-        return names[category] || category;
-    },
-
-    // 템플릿 댓글 번역
-    translateTemplateComment: function(text) {
-        document.getElementById('commentInput').value = text;
-        this.translateComment();
-        
-        // 번역 섹션으로 스크롤
-        document.querySelector('h2').scrollIntoView({ behavior: 'smooth' });
     },
 
     // 계정 목록 초기화
