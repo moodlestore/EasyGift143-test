@@ -1,14 +1,8 @@
 // 인게이지먼트 어시스턴트 모듈
 window.EngagementAssistant = {
-    // 템플릿 데이터
-    templates: {
-        praise: ["정말 예쁘네요!", "멋진 사진이에요!", "스타일이 좋네요!", "너무 귀여워요!", "분위기가 좋네요!"],
-        question: ["어디서 구매하셨나요?", "브랜드가 궁금해요!", "가격대가 어떻게 되나요?", "혹시 링크 있나요?", "어떤 사이즈인가요?"],
-        empathy: ["저도 같은 생각이에요!", "공감합니다!", "정말 그래요!", "완전 동감해요!", "맞아요!"],
-        recommendation: ["추천해주셔서 감사해요!", "꼭 써보고 싶어요!", "정보 감사합니다!", "좋은 정보네요!", "참고하겠습니다!"]
-    },
+    // ... 다른 코드들 ...
 
-    // HTML 반환
+    // HTML 반환 - 이 함수 전체를 교체하세요
     getHTML: function() {
         const mode = AppState.currentMode;
         
@@ -47,16 +41,8 @@ ${mode === 'pro' ? `
             <h3 style="margin: 0; font-size: 1.4em; color: #333;"><span id="selectedAccountName">계정을 선택하세요</span></h3>
         </div>
         
-        <!-- 중앙: 캐릭터와 진행률 바 (우측 배치) -->
-       <div style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 15px;">
-    <div style="width: 30px; height: 150px; background: #e9ecef; border-radius: 15px; position: relative; border: 2px solid #dee2e6;">
-        <div id="verticalProgress" style="position: absolute; bottom: 0; width: 100%; background: #28a745; border-radius: 13px; transition: height 0.3s ease; height: 0%;"></div>
-    </div>
-    <div id="progressCharacter" style="font-size: 3.5em;">😴</div>
-</div>
-        
         <!-- 중앙: 목표 상세 (가로 배치) -->
-<div style="position: absolute; top: 50%; left: 20px; right: 120px; transform: translateY(-50%); display: flex; justify-content: space-between;">
+        <div style="position: absolute; top: 50%; left: 20px; right: 120px; transform: translateY(-50%); display: flex; justify-content: space-between;">
             <div style="text-align: center;">
                 <div style="font-size: 0.9em; color: #666; margin-bottom: 8px;">좋아요</div>
                 <div class="goal-controls">
@@ -95,6 +81,14 @@ ${mode === 'pro' ? `
                     <button onclick="EngagementAssistant.updateCurrentGoal('follows', 1)" style="width: 30px; height: 30px; font-size: 14px; border-radius: 50%; background: #667eea; color: white; border: none; margin: 0 2px;">+</button>
                 </div>
             </div>
+        </div>
+        
+        <!-- 우측: 캐릭터와 진행률 바 -->
+        <div style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 15px;">
+            <div style="width: 30px; height: 150px; background: #e9ecef; border-radius: 15px; position: relative; border: 2px solid #dee2e6;">
+                <div id="verticalProgress" style="position: absolute; bottom: 0; width: 100%; background: #28a745; border-radius: 13px; transition: height 0.3s ease; height: 0%;"></div>
+            </div>
+            <div id="progressCharacter" style="font-size: 3.5em;">😴</div>
         </div>
     </div>
     
