@@ -31,7 +31,7 @@ ${mode === 'pro' ? `
    <!-- 6:4 비율 레이아웃 (높이 30% 더 축소) -->
 <div style="display: flex; gap: 20px; align-items: stretch; min-height: 108px;">
     <!-- 왼쪽 영역 (60%) - 선택된 계정 현황 -->
-    <div style="flex: 6; background: white; padding: 20px; border-radius: 8px; border: 2px solid #667eea; display: flex; flex-direction: column; position: relative;">
+<div style="flex: 6; background: white; padding: 15px; border-radius: 8px; border: 2px solid #667eea; display: flex; flex-direction: column; position: relative; height: 120px; max-height: 120px;">
         <!-- 좌측 상단: 날짜 -->
         <div style="position: absolute; top: 15px; left: 20px;">
             <div style="color: #666; font-size: 16px; font-weight: bold;">2024.06.03</div>
@@ -98,47 +98,41 @@ ${mode === 'pro' ? `
         </div>
     </div>
     
-    <!-- 오른쪽 영역 (40%) - 계정 관리 (높이 30% 더 축소) -->
-    <div style="flex: 4; background: white; padding: 20px; border-radius: 8px; border: 2px solid #28a745; display: flex; flex-direction: column; min-height: 68px;">
-        
-        <!-- SNS 선택 -->
-        <div class="form-group" style="margin-bottom: 15px;">
-            <label for="snsSelect" style="font-size: 14px; margin-bottom: 5px;">SNS 플랫폼:</label>
-            <select id="snsSelect" style="padding: 10px; font-size: 14px;">
-                <option value="instagram">Instagram</option>
-                <option value="x">X (Twitter)</option>
-                <option value="threads">Threads</option>
-            </select>
-        </div>
-        
-        <!-- 언어 선택 -->
-        <div class="form-group" style="margin-bottom: 15px;">
-            <label for="languageSelect" style="font-size: 14px; margin-bottom: 5px;">언어:</label>
-            <select id="languageSelect" style="padding: 10px; font-size: 14px;">
-                <option value="korean">한국어</option>
-                <option value="japanese">일본어</option>
-                <option value="french">프랑스어</option>
-            </select>
-        </div>
-        
-        <!-- 추가/제거 버튼 -->
-        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-            <button onclick="EngagementAssistant.addAccount()" style="flex: 1; background: #28a745; font-size: 14px; padding: 10px;">➕ 추가</button>
-            <button onclick="EngagementAssistant.removeAccount()" style="flex: 1; background: #dc3545; font-size: 14px; padding: 10px;">➖ 제거</button>
-        </div>
-        
-        <!-- 계정 목록 -->
-        <div style="margin-bottom: 10px;">
-            <label style="font-size: 14px; margin-bottom: 5px;">활성 계정 목록:</label>
-        </div>
-        <select id="accountList" size="6" style="width: 100%; font-size: 14px; padding: 5px; flex: 1;" onchange="EngagementAssistant.selectAccount()">
-            <!-- 동적으로 채워짐 -->
+    <!-- 오른쪽 영역 (40%) - 계정 관리 (높이 압축) -->
+<div style="flex: 4; background: white; padding: 10px; border-radius: 8px; border: 2px solid #28a745; display: flex; flex-direction: column; height: 120px; max-height: 120px; overflow: hidden;">
+    
+    <!-- SNS 선택 -->
+    <div class="form-group" style="margin-bottom: 5px;">
+        <label for="snsSelect" style="font-size: 12px; margin-bottom: 2px;">SNS:</label>
+        <select id="snsSelect" style="padding: 5px; font-size: 12px;">
+            <option value="instagram">Instagram</option>
+            <option value="x">X (Twitter)</option>
+            <option value="threads">Threads</option>
         </select>
-        
-        <div style="text-align: center; margin-top: 10px;">
-            <button onclick="EngagementAssistant.saveAccountList()" style="background: #667eea; font-size: 12px; padding: 8px 12px;">💾 목록 저장</button>
-        </div>
     </div>
+    
+    <!-- 언어 선택 -->
+    <div class="form-group" style="margin-bottom: 5px;">
+        <label for="languageSelect" style="font-size: 12px; margin-bottom: 2px;">언어:</label>
+        <select id="languageSelect" style="padding: 5px; font-size: 12px;">
+            <option value="korean">한국어</option>
+            <option value="japanese">일본어</option>
+            <option value="french">프랑스어</option>
+        </select>
+    </div>
+    
+    <!-- 추가/제거 버튼 -->
+    <div style="display: flex; gap: 5px; margin-bottom: 5px;">
+        <button onclick="EngagementAssistant.addAccount()" style="flex: 1; background: #28a745; font-size: 10px; padding: 5px;">➕ 추가</button>
+        <button onclick="EngagementAssistant.removeAccount()" style="flex: 1; background: #dc3545; font-size: 10px; padding: 5px;">➖ 제거</button>
+    </div>
+    
+    <!-- 계정 목록 -->
+    <select id="accountList" size="3" style="width: 100%; font-size: 10px; padding: 2px; flex: 1; margin-bottom: 5px;" onchange="EngagementAssistant.selectAccount()">
+        <!-- 동적으로 채워짐 -->
+    </select>
+    
+    <button onclick="EngagementAssistant.saveAccountList()" style="background: #667eea; font-size: 10px; padding: 4px 8px;">💾 저장</button>
 </div>
                         
                 <!-- 번역 어시스턴트 섹션 -->
