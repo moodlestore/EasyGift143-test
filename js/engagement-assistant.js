@@ -48,15 +48,15 @@ ${mode === 'pro' ? `
         </div>
         
         <!-- 중앙: 캐릭터와 진행률 바 (우측 배치) -->
-        <div style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center;">
-            <div id="progressCharacter" style="font-size: 2.5em; margin-bottom: 10px;">😴</div>
-            <div style="width: 25px; height: 100px; background: #e9ecef; border-radius: 12px; position: relative; border: 2px solid #dee2e6;">
-                <div id="verticalProgress" style="position: absolute; bottom: 0; width: 100%; background: #28a745; border-radius: 10px; transition: height 0.3s ease; height: 0%;"></div>
-            </div>
-        </div>
+       <div style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 15px;">
+    <div style="width: 30px; height: 150px; background: #e9ecef; border-radius: 15px; position: relative; border: 2px solid #dee2e6;">
+        <div id="verticalProgress" style="position: absolute; bottom: 0; width: 100%; background: #28a745; border-radius: 13px; transition: height 0.3s ease; height: 0%;"></div>
+    </div>
+    <div id="progressCharacter" style="font-size: 3.5em;">😴</div>
+</div>
         
-        <!-- 하단: 목표 상세 (가로 배치) -->
-        <div style="position: absolute; bottom: 15px; left: 20px; right: 80px; display: flex; justify-content: space-between;">
+        <!-- 중앙: 목표 상세 (가로 배치) -->
+<div style="position: absolute; top: 50%; left: 20px; right: 120px; transform: translateY(-50%); display: flex; justify-content: space-between;">
             <div style="text-align: center;">
                 <div style="font-size: 0.9em; color: #666; margin-bottom: 8px;">좋아요</div>
                 <div class="goal-controls">
