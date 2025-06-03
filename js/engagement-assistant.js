@@ -21,7 +21,7 @@ ${mode === 'pro' ? `
         </ul>
     </div>
 ` : ''}
-                
+
 <!-- 일일 목표 섹션 -->
 <div class="section">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
