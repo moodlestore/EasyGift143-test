@@ -314,6 +314,41 @@ window.EngagementAssistant = {
             ];
         }
         this.updateAccountListDisplay();
+        
+        // 🔥 새로 추가: 저장된 선택 항목 복원 또는 첫 번째 항목 자동 선택
+        this.restoreLastSelectedAccount();
+    },
+
+    // 🔥 새로 추가: 마지막 선택된 계정 복원 함수
+    restoreLastSelectedAccount: function() {
+        setTimeout(() => {
+            const accountList = document.getElementById('accountList');
+            if (!accountList || accountList.options.length === 0) return;
+            
+            // 저장된 마지막 선택 계정 가져오기
+            const lastSelectedAccount = Utils.safeStorage.get('lastSelectedAccount', '');
+            let targetIndex = 0; // 기본값: 첫 번째 항목
+            
+            if (lastSelectedAccount) {
+                // 저장된 계정이 현재 목록에 있는지 확인
+                for (let i = 0; i < accountList.options.length; i++) {
+                    if (accountList.options[i].value === lastSelectedAccount) {
+                        targetIndex = i;
+                        break;
+                    }
+                }
+            }
+            
+            // 계정 선택 및 UI 업데이트
+            accountList.selectedIndex = targetIndex;
+            this.currentSelectedAccount = accountList.options[targetIndex].value;
+            this.updateCurrentAccountDisplay();
+            
+            // 선택된 항목 시각적 표시 (옵션)
+            if (lastSelectedAccount && targetIndex > 0) {
+                Utils.showAchievement(`마지막 선택 계정 "${this.getAccountDisplayName(...this.currentSelectedAccount.split('-'))}"이 자동으로 선택되었습니다! 🎯`);
+            }
+        }, 200); // DOM 업데이트 대기
     },
 
     // 계정 추가
@@ -343,9 +378,33 @@ window.EngagementAssistant = {
             
             if (index > -1) {
                 AppState.accountList.splice(index, 1);
+                
+                // 🔥 수정: 삭제된 계정이 마지막 선택 계정이었다면 저장소에서도 제거
+                const lastSelectedAccount = Utils.safeStorage.get('lastSelectedAccount', '');
+                if (lastSelectedAccount === accountKey) {
+                    Utils.safeStorage.remove('lastSelectedAccount');
+                    this.currentSelectedAccount = null;
+                }
+                
                 this.updateAccountListDisplay();
                 AppState.saveAppState();
                 Utils.showAchievement(`${selectedOption.text} 계정이 제거되었습니다!`);
+                
+                // 🔥 수정: 삭제 후 첫 번째 항목 자동 선택
+                setTimeout(() => {
+                    const updatedAccountList = document.getElementById('accountList');
+                    if (updatedAccountList && updatedAccountList.options.length > 0) {
+                        updatedAccountList.selectedIndex = 0;
+                        this.currentSelectedAccount = updatedAccountList.options[0].value;
+                        this.updateCurrentAccountDisplay();
+                        // 새로 선택된 계정 저장
+                        Utils.safeStorage.set('lastSelectedAccount', this.currentSelectedAccount);
+                    } else {
+                        // 계정이 모두 삭제된 경우
+                        this.currentSelectedAccount = null;
+                        this.updateCurrentAccountDisplay();
+                    }
+                }, 100);
             }
         } else {
             Utils.showAchievement('제거할 계정을 선택해주세요.', 'error');
@@ -389,7 +448,7 @@ window.EngagementAssistant = {
         return `${snsFormatted} / ${languageNames[language]}`;
     },
 
-    // 계정 선택 함수
+    // 🔥 수정: 계정 선택 함수 (마지막 선택 저장 추가)
     selectAccount: function() {
         const accountList = document.getElementById('accountList');
         const selectedOption = accountList.options[accountList.selectedIndex];
@@ -397,6 +456,9 @@ window.EngagementAssistant = {
         if (selectedOption) {
             this.currentSelectedAccount = selectedOption.value;
             this.updateCurrentAccountDisplay();
+            
+            // 🔥 새로 추가: 마지막 선택된 계정 저장
+            Utils.safeStorage.set('lastSelectedAccount', this.currentSelectedAccount);
         }
     },
 
@@ -520,9 +582,15 @@ window.EngagementAssistant = {
         }
     },
 
-    // 계정 목록 저장
+    // 🔥 수정: 계정 목록 저장 (마지막 선택 계정도 함께 저장)
     saveAccountList: function() {
         AppState.saveAppState();
+        
+        // 현재 선택된 계정도 저장
+        if (this.currentSelectedAccount) {
+            Utils.safeStorage.set('lastSelectedAccount', this.currentSelectedAccount);
+        }
+        
         Utils.showAchievement('계정 목록이 저장되었습니다! 💾');
     },
 
