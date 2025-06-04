@@ -8,17 +8,13 @@ window.AppState = {
         total: 0
     },
     isLoading: false,
-    dailyGoals: {
-        korean: { likes: 0, comments: 0, follows: 0, targets: { likes: 15, comments: 5, follows: 3 } },
-        japanese: { likes: 0, comments: 0, follows: 0, targets: { likes: 12, comments: 4, follows: 3 } },
-        french: { likes: 0, comments: 0, follows: 0, targets: { likes: 10, comments: 3, follows: 2 } }
-    },
+    // 포스팅이 추가된 총 목표
     totalGoals: {
-    likes: 0, comments: 0, follows: 0,
-    targets: { likes: 37, comments: 12, follows: 8 }
-},
-accountList: [],
-accountGoals: {}, // 계정별 개별 목표
+        postings: 0, likes: 0, comments: 0, follows: 0,
+        targets: { postings: 21, likes: 37, comments: 12, follows: 8 } // 포스팅 목표 추가
+    },
+    accountList: [],
+    accountGoals: {}, // 계정별 개별 목표 (포스팅 포함)
     
     // 앱 초기화
     initialize: function() {
@@ -27,39 +23,59 @@ accountGoals: {}, // 계정별 개별 목표
         this.setupEventListeners();
     },
     
-    // 앱 상태 저장
-saveAppState: function() {
-    try {
-        localStorage.setItem('appState', JSON.stringify({
-    currentMode: this.currentMode,
-    revenue: this.revenue,
-    dailyGoals: this.dailyGoals,
-    totalGoals: this.totalGoals,
-    accountList: this.accountList,
-    accountGoals: this.accountGoals
-}));
-    } catch (e) {
-        console.log('상태 저장 오류:', e);
-    }
-},
-
-// 앱 상태 로드
-loadAppState: function() {
-    try {
-        const saved = localStorage.getItem('appState');
-        if (saved) {
-            const state = JSON.parse(saved);
-            this.currentMode = state.currentMode || 'free';
-            this.revenue = { ...this.revenue, ...state.revenue };
-            this.dailyGoals = { ...this.dailyGoals, ...state.dailyGoals };
-            this.totalGoals = { ...this.totalGoals, ...state.totalGoals };
-            this.accountList = state.accountList || [];
-            this.accountGoals = state.accountGoals || {}; // 계정별 목표 데이터 로드
+    // 앱 상태 저장 (포스팅 포함)
+    saveAppState: function() {
+        try {
+            localStorage.setItem('appState', JSON.stringify({
+                currentMode: this.currentMode,
+                revenue: this.revenue,
+                totalGoals: this.totalGoals,
+                accountList: this.accountList,
+                accountGoals: this.accountGoals
+            }));
+        } catch (e) {
+            console.log('상태 저장 오류:', e);
         }
-    } catch (e) {
-        console.log('상태 로드 오류:', e);
-    }
-},
+    },
+
+    // 앱 상태 로드 (포스팅 포함)
+    loadAppState: function() {
+        try {
+            const saved = localStorage.getItem('appState');
+            if (saved) {
+                const state = JSON.parse(saved);
+                this.currentMode = state.currentMode || 'free';
+                this.revenue = { ...this.revenue, ...state.revenue };
+                this.totalGoals = { ...this.totalGoals, ...state.totalGoals };
+                this.accountList = state.accountList || [];
+                this.accountGoals = state.accountGoals || {};
+                
+                // 기존 데이터 마이그레이션 (포스팅 목표가 없는 경우 추가)
+                if (this.accountGoals) {
+                    Object.keys(this.accountGoals).forEach(accountKey => {
+                        if (!this.accountGoals[accountKey].hasOwnProperty('postings')) {
+                            this.accountGoals[accountKey].postings = 0;
+                        }
+                        if (!this.accountGoals[accountKey].targets.hasOwnProperty('postings')) {
+                            const [sns] = accountKey.split('-');
+                            const defaultPostings = sns === 'x' ? 3 : 2; // X는 3개, 나머지는 2개
+                            this.accountGoals[accountKey].targets.postings = defaultPostings;
+                        }
+                    });
+                }
+                
+                // totalGoals에 포스팅 목표가 없으면 추가
+                if (!this.totalGoals.hasOwnProperty('postings')) {
+                    this.totalGoals.postings = 0;
+                }
+                if (!this.totalGoals.targets.hasOwnProperty('postings')) {
+                    this.totalGoals.targets.postings = 21; // 기본값
+                }
+            }
+        } catch (e) {
+            console.log('상태 로드 오류:', e);
+        }
+    },
     
     // 이벤트 리스너 설정
     setupEventListeners: function() {
@@ -250,13 +266,14 @@ window.Utils = {
     },
     
     // 성취 알림
-    showAchievement: function(message) {
+    showAchievement: function(message, type = 'success') {
         const toast = document.createElement('div');
+        const bgColor = type === 'error' ? '#dc3545' : '#28a745';
         toast.style.cssText = `
             position: fixed;
             top: 20px;
             right: 20px;
-            background: #28a745;
+            background: ${bgColor};
             color: white;
             padding: 15px 20px;
             border-radius: 8px;
