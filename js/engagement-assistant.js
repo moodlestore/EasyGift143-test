@@ -137,6 +137,34 @@ window.EngagementAssistant = {
                     </div>
                 </div>
             </div>
+
+            <!-- 번역 도우미 -->
+            <div class="section">
+                <h2>🌐 번역 도우미</h2>
+                
+                <div class="form-group">
+                    <label for="translationWebhook">웹훅 URL:</label>
+                    <div class="url-input-group">
+                        <input type="text" id="translationWebhook" placeholder="번역 웹훅 URL을 입력하세요">
+                        <button onclick="EngagementAssistant.saveTranslationWebhook()">저장</button>
+                    </div>
+                    <span id="translationWebhookSaved" class="saved-indicator" style="display: none;">✅ 저장됨</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="originalText">원문 (한국어):</label>
+                    <textarea id="originalText" rows="3" placeholder="번역할 한국어 텍스트를 입력하세요..."></textarea>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <button onclick="EngagementAssistant.translateText()">🌐 번역</button>
+                </div>
+                
+                <div class="form-group">
+                    <label for="translationResult">번역 결과:</label>
+                    <textarea id="translationResult" rows="6" readonly placeholder=""></textarea>
+                </div>
+            </div>
         `;
     },
 
@@ -144,6 +172,7 @@ window.EngagementAssistant = {
         this.checkMidnightReset();
         this.restoreGoalsState();
         this.initializeAccountList();
+        this.loadSavedTranslationWebhook();
     },
 
     restoreGoalsState: function() {
@@ -432,6 +461,106 @@ window.EngagementAssistant = {
         }
         
         AppState.saveAppState();
+    },
+	
+	// 번역 웹훅 URL 저장
+    saveTranslationWebhook: function() {
+        const webhookUrl = document.getElementById('translationWebhook').value.trim();
+        const indicator = document.getElementById('translationWebhookSaved');
+        
+        if (webhookUrl) {
+            Utils.safeStorage.set('translationWebhookUrl', webhookUrl);
+            this.showSavedIndicator(indicator);
+            Utils.showAchievement('번역 웹훅 URL이 저장되었습니다.', 'success');
+        } else {
+            Utils.showAchievement('웹훅 URL을 입력해주세요.', 'error');
+        }
+    },
+
+    // 저장된 번역 웹훅 URL 로드
+    loadSavedTranslationWebhook: function() {
+        const savedUrl = Utils.safeStorage.get('translationWebhookUrl', '');
+        if (savedUrl) {
+            document.getElementById('translationWebhook').value = savedUrl;
+            const indicator = document.getElementById('translationWebhookSaved');
+            this.showSavedIndicator(indicator);
+        }
+    },
+
+    // 저장 표시기 표시
+    showSavedIndicator: function(indicator) {
+        if (indicator) {
+            indicator.style.display = 'inline';
+            setTimeout(() => {
+                indicator.style.display = 'none';
+            }, 3000);
+        }
+    },
+	
+	// 번역 기능
+    translateText: function() {
+        const webhookUrl = document.getElementById('translationWebhook').value.trim();
+        const originalText = document.getElementById('originalText').value.trim();
+        const resultTextarea = document.getElementById('translationResult');
+        
+        if (!webhookUrl) {
+            Utils.showAchievement('웹훅 URL을 입력해주세요.', 'error');
+            return;
+        }
+        
+        if (!originalText) {
+            Utils.showAchievement('번역할 텍스트를 입력해주세요.', 'error');
+            return;
+        }
+        
+        // 번역 대상 언어 목록 생성 (한국 제외)
+        const languageNames = {
+            japan: '일본어',
+            usa: '영어 (미국)',
+            canada: '영어 (캐나다)'
+        };
+        
+        const targetLanguages = Object.keys(languageNames);
+        
+        resultTextarea.value = '번역 중...';
+        
+        // 웹훅으로 번역 요청
+        const requestData = {
+            original_text: originalText,
+            target_languages: targetLanguages,
+            timestamp: new Date().toISOString()
+        };
+        
+        fetch(webhookUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                let resultText = `원문 (한국어): ${originalText}\n\n`;
+                
+                targetLanguages.forEach(lang => {
+                    if (data.translations && data.translations[lang]) {
+                        resultText += `${languageNames[lang]}: ${data.translations[lang]}\n\n`;
+                    }
+                });
+                
+                resultTextarea.value = resultText.trim();
+                Utils.showAchievement('번역이 완료되었습니다! 🌐');
+            } else {
+                resultTextarea.value = '번역 중 오류가 발생했습니다.';
+                Utils.showAchievement('번역 실패: ' + (data.error || '알 수 없는 오류'), 'error');
+            }
+        })
+        .catch(error => {
+            console.error('번역 오류:', error);
+            resultTextarea.value = '네트워크 오류가 발생했습니다.';
+            Utils.showAchievement('번역 요청 실패: ' + error.message, 'error');
+        });
     },
 
     updateProgressCharacter: function(percentage) {
