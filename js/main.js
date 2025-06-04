@@ -1,4 +1,4 @@
-// 전역 상태 관리
+// 전역 상태 관리 - posts 필드 추가 및 수정
 window.AppState = {
     currentMode: 'free', // 'free' 또는 'pro'
     currentPage: 'product-register',
@@ -8,17 +8,19 @@ window.AppState = {
         total: 0
     },
     isLoading: false,
+    // posts 필드 추가된 dailyGoals (호환성을 위해 유지)
     dailyGoals: {
-        korean: { likes: 0, comments: 0, follows: 0, targets: { likes: 15, comments: 5, follows: 3 } },
-        japanese: { likes: 0, comments: 0, follows: 0, targets: { likes: 12, comments: 4, follows: 3 } },
-        french: { likes: 0, comments: 0, follows: 0, targets: { likes: 10, comments: 3, follows: 2 } }
+        korean: { posts: 0, likes: 0, comments: 0, follows: 0, targets: { posts: 1, likes: 15, comments: 5, follows: 3 } },
+        japanese: { posts: 0, likes: 0, comments: 0, follows: 0, targets: { posts: 1, likes: 12, comments: 4, follows: 3 } },
+        french: { posts: 0, likes: 0, comments: 0, follows: 0, targets: { posts: 1, likes: 10, comments: 3, follows: 2 } }
     },
+    // posts 필드 추가된 totalGoals
     totalGoals: {
-    likes: 0, comments: 0, follows: 0,
-    targets: { likes: 37, comments: 12, follows: 8 }
-},
-accountList: [],
-accountGoals: {}, // 계정별 개별 목표
+        posts: 0, likes: 0, comments: 0, follows: 0,
+        targets: { posts: 3, likes: 37, comments: 12, follows: 8 }
+    },
+    accountList: [],
+    accountGoals: {}, // 계정별 개별 목표
     
     // 앱 초기화
     initialize: function() {
@@ -27,39 +29,84 @@ accountGoals: {}, // 계정별 개별 목표
         this.setupEventListeners();
     },
     
-    // 앱 상태 저장
-saveAppState: function() {
-    try {
-        localStorage.setItem('appState', JSON.stringify({
-    currentMode: this.currentMode,
-    revenue: this.revenue,
-    dailyGoals: this.dailyGoals,
-    totalGoals: this.totalGoals,
-    accountList: this.accountList,
-    accountGoals: this.accountGoals
-}));
-    } catch (e) {
-        console.log('상태 저장 오류:', e);
-    }
-},
-
-// 앱 상태 로드
-loadAppState: function() {
-    try {
-        const saved = localStorage.getItem('appState');
-        if (saved) {
-            const state = JSON.parse(saved);
-            this.currentMode = state.currentMode || 'free';
-            this.revenue = { ...this.revenue, ...state.revenue };
-            this.dailyGoals = { ...this.dailyGoals, ...state.dailyGoals };
-            this.totalGoals = { ...this.totalGoals, ...state.totalGoals };
-            this.accountList = state.accountList || [];
-            this.accountGoals = state.accountGoals || {}; // 계정별 목표 데이터 로드
+    // 앱 상태 저장 - posts 필드 포함
+    saveAppState: function() {
+        try {
+            localStorage.setItem('appState', JSON.stringify({
+                currentMode: this.currentMode,
+                revenue: this.revenue,
+                dailyGoals: this.dailyGoals,
+                totalGoals: this.totalGoals,
+                accountList: this.accountList,
+                accountGoals: this.accountGoals
+            }));
+        } catch (e) {
+            console.log('상태 저장 오류:', e);
         }
-    } catch (e) {
-        console.log('상태 로드 오류:', e);
-    }
-},
+    },
+
+    // 앱 상태 로드 - posts 필드 호환성 처리
+    loadAppState: function() {
+        try {
+            const saved = localStorage.getItem('appState');
+            if (saved) {
+                const state = JSON.parse(saved);
+                this.currentMode = state.currentMode || 'free';
+                this.revenue = { ...this.revenue, ...state.revenue };
+                
+                // dailyGoals 호환성 처리 (posts 필드 추가)
+                if (state.dailyGoals) {
+                    Object.keys(this.dailyGoals).forEach(lang => {
+                        if (state.dailyGoals[lang]) {
+                            this.dailyGoals[lang] = {
+                                posts: state.dailyGoals[lang].posts || 0,
+                                likes: state.dailyGoals[lang].likes || 0,
+                                comments: state.dailyGoals[lang].comments || 0,
+                                follows: state.dailyGoals[lang].follows || 0,
+                                targets: {
+                                    posts: state.dailyGoals[lang].targets?.posts || this.dailyGoals[lang].targets.posts,
+                                    likes: state.dailyGoals[lang].targets?.likes || this.dailyGoals[lang].targets.likes,
+                                    comments: state.dailyGoals[lang].targets?.comments || this.dailyGoals[lang].targets.comments,
+                                    follows: state.dailyGoals[lang].targets?.follows || this.dailyGoals[lang].targets.follows
+                                }
+                            };
+                        }
+                    });
+                }
+                
+                // totalGoals 호환성 처리 (posts 필드 추가)
+                if (state.totalGoals) {
+                    this.totalGoals = {
+                        posts: state.totalGoals.posts || 0,
+                        likes: state.totalGoals.likes || 0,
+                        comments: state.totalGoals.comments || 0,
+                        follows: state.totalGoals.follows || 0,
+                        targets: {
+                            posts: state.totalGoals.targets?.posts || this.totalGoals.targets.posts,
+                            likes: state.totalGoals.targets?.likes || this.totalGoals.targets.likes,
+                            comments: state.totalGoals.targets?.comments || this.totalGoals.targets.comments,
+                            follows: state.totalGoals.targets?.follows || this.totalGoals.targets.follows
+                        }
+                    };
+                }
+                
+                this.accountList = state.accountList || [];
+                
+                // accountGoals 호환성 처리 (posts 필드 추가)
+                this.accountGoals = state.accountGoals || {};
+                Object.keys(this.accountGoals).forEach(accountKey => {
+                    if (!this.accountGoals[accountKey].hasOwnProperty('posts')) {
+                        this.accountGoals[accountKey].posts = 0;
+                    }
+                    if (!this.accountGoals[accountKey].targets.hasOwnProperty('posts')) {
+                        this.accountGoals[accountKey].targets.posts = 1; // 기본값
+                    }
+                });
+            }
+        } catch (e) {
+            console.log('상태 로드 오류:', e);
+        }
+    },
     
     // 이벤트 리스너 설정
     setupEventListeners: function() {
@@ -87,8 +134,9 @@ loadAppState: function() {
                 // 분석 대시보드에 있으면 제품 등록으로 이동
                 if (this.currentPage === 'analytics-dashboard') {
                     Navigation.showPage('product-register');
+                    // 탭 활성화 수정
+                    document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
                     document.querySelector('[data-page="product-register"]').classList.add('active');
-                    document.querySelector('[data-page="analytics-dashboard"]').classList.remove('active');
                 }
                 
                 // 현재 페이지 새로고침
@@ -122,9 +170,9 @@ loadAppState: function() {
     updateRevenueDisplay: function() {
         const revenue = this.revenue;
         
-        document.getElementById('affiliateRevenue').textContent = `${revenue.affiliate}`;
-        document.getElementById('otherRevenue').textContent = `${revenue.other}`;
-        document.getElementById('totalRevenue').textContent = `${revenue.total}`;
+        document.getElementById('affiliateRevenue').textContent = `$${revenue.affiliate}`;
+        document.getElementById('otherRevenue').textContent = `$${revenue.other}`;
+        document.getElementById('totalRevenue').textContent = `$${revenue.total}`;
         
         const progress = Math.min((revenue.total / 50) * 100, 100);
         document.getElementById('revenueProgress').style.width = `${progress}%`;
@@ -138,7 +186,7 @@ loadAppState: function() {
             upgradeMessage.style.color = '#28a745';
         } else {
             upgradeBtn.disabled = true;
-            upgradeMessage.textContent = `${(50 - revenue.total).toFixed(2)} 더 필요합니다.`;
+            upgradeMessage.textContent = `$${(50 - revenue.total).toFixed(2)} 더 필요합니다.`;
             upgradeMessage.style.color = '#dc3545';
         }
     },
@@ -178,7 +226,7 @@ loadAppState: function() {
     }
 };
 
-// 네비게이션 관리
+// 네비게이션 관리 - 수정 없음
 window.Navigation = {
     // 네비게이션 설정
     setupNavigation: function() {
@@ -241,7 +289,7 @@ window.Navigation = {
     }
 };
 
-// 유틸리티 함수
+// 유틸리티 함수 - 수정 없음
 window.Utils = {
     // 마지막 동기화 시간 업데이트
     updateLastSync: function() {
@@ -250,13 +298,19 @@ window.Utils = {
     },
     
     // 성취 알림
-    showAchievement: function(message) {
+    showAchievement: function(message, type = 'success') {
         const toast = document.createElement('div');
+        
+        let bgColor = '#28a745'; // success
+        if (type === 'error') bgColor = '#dc3545';
+        if (type === 'warning') bgColor = '#ffc107';
+        if (type === 'info') bgColor = '#17a2b8';
+        
         toast.style.cssText = `
             position: fixed;
             top: 20px;
             right: 20px;
-            background: #28a745;
+            background: ${bgColor};
             color: white;
             padding: 15px 20px;
             border-radius: 8px;
