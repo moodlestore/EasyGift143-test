@@ -43,7 +43,7 @@ window.EngagementAssistant = {
                         <div style="flex: 6; background: white; padding: 20px; border-radius: 8px; border: 2px solid #667eea; display: flex; flex-direction: column; position: relative;">
                             <!-- 좌측 상단: 날짜 -->
                             <div style="position: absolute; top: 10px; left: 20px;">
-                                <div style="color: #666; font-size: 16px; font-weight: bold;">2024.06.03</div>
+                                <div style="color: #666; font-size: 20px; font-weight: bold;">2024.06.03</div>
                             </div>
                             
                             <!-- 우측 상단: 총 진행률 -->
@@ -123,7 +123,7 @@ window.EngagementAssistant = {
                         
                         <!-- 오른쪽 영역 (40%) - 계정 관리 -->
                         <div style="flex: 4; background: white; padding: 20px; border-radius: 8px; border: 2px solid #28a745; display: flex; flex-direction: column; min-height: 60px;">
-                            <h3 style="margin: 0 0 10px 0; text-align: center; font-size: 1.3em;">⚙️ 계정 관리</h3>
+                            <h3 style="margin: 0 0 10px 0; text-align: center; font-size: 1.3em;">계정 관리</h3>
                             
                             <!-- SNS 선택 -->
                             <div class="form-group" style="margin-bottom: 8px;">
@@ -160,8 +160,8 @@ window.EngagementAssistant = {
                                 <!-- 동적으로 채워짐 -->
                             </select>
                             
-                            <div style="text-align: center; margin-top: 10px;">
-                                <button onclick="EngagementAssistant.saveAccountList()" style="background: #667eea; font-size: 12px; padding: 8px 12px;">💾 목록 저장</button>
+                            <div style="text-align: center; margin-top: 20px;">
+                                <button onclick="EngagementAssistant.saveAccountList()" style="background: #667eea; font-size: 14px; padding: 10px 50px;">목록 저장</button>
                             </div>
                         </div>
                     </div>
