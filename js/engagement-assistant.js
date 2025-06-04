@@ -43,7 +43,7 @@ window.EngagementAssistant = {
                         <div style="flex: 6; background: white; padding: 20px; border-radius: 8px; border: 2px solid #667eea; display: flex; flex-direction: column; position: relative;">
                             <!-- 좌측 상단: 날짜 -->
                             <div style="position: absolute; top: 10px; left: 20px;">
-                                <div style="color: #666; font-size: 20px; font-weight: bold;">2024.06.03</div>
+                                <div style="color: #666; font-size: 16px; font-weight: bold;">2024.06.03</div>
                             </div>
                             
                             <!-- 우측 상단: 총 진행률 -->
@@ -63,11 +63,11 @@ window.EngagementAssistant = {
                                     <div style="font-size: 1.3em; color: #666; font-weight: bold; width: 80px;">포스팅</div>
                                     <div class="goal-controls" style="display: flex; align-items: center; gap: 8px;">
                                         <button onclick="EngagementAssistant.updateCurrentGoal('postings', -1)" style="width: 30px; height: 30px; font-size: 14px; border-radius: 50%; background: #667eea; color: white; border: none;">-</button>
-                                        <span style="display: flex; align-items: center; gap: 0px;">
-											<span id="current-postings" style="font-size: 1.5em; font-weight: bold;">0</span>
-											<span style="color: #666; font-size: 1.2em;">/</span>
-											<span id="current-postings-target" style="font-size: 1.3em;">0</span>
-										</span>
+                                        <span style="display: flex; align-items: center;">
+                                            <span id="current-postings" style="font-size: 1.5em; font-weight: bold;">0</span>
+                                            <span style="color: #666; font-size: 1.2em; margin: 0 4px;"> / </span>
+                                            <span id="current-postings-target" style="font-size: 1.5em;">0</span>
+                                        </span>
                                         <button onclick="EngagementAssistant.updateCurrentGoal('postings', 1)" style="width: 30px; height: 30px; font-size: 14px; border-radius: 50%; background: #667eea; color: white; border: none;">+</button>
                                     </div>
                                 </div>
@@ -76,11 +76,11 @@ window.EngagementAssistant = {
                                     <div style="font-size: 1.3em; color: #666; font-weight: bold; width: 80px;">좋아요</div>
                                     <div class="goal-controls" style="display: flex; align-items: center; gap: 8px;">
                                         <button onclick="EngagementAssistant.updateCurrentGoal('likes', -1)" style="width: 30px; height: 30px; font-size: 14px; border-radius: 50%; background: #667eea; color: white; border: none;">-</button>
-                                        <span style="display: flex; align-items: center; gap: 0px;">
-											<span id="current-postings" style="font-size: 1.5em; font-weight: bold;">0</span>
-											<span style="color: #666; font-size: 1.2em;">/</span>
-											<span id="current-postings-target" style="font-size: 1.3em;">0</span>
-										</span>
+                                        <span style="display: flex; align-items: center;">
+                                            <span id="current-likes" style="font-size: 1.5em; font-weight: bold;">0</span>
+                                            <span style="color: #666; font-size: 1.2em; margin: 0 4px;"> / </span>
+                                            <span id="current-likes-target" style="font-size: 1.5em;">0</span>
+                                        </span>
                                         <button onclick="EngagementAssistant.updateCurrentGoal('likes', 1)" style="width: 30px; height: 30px; font-size: 14px; border-radius: 50%; background: #667eea; color: white; border: none;">+</button>
                                     </div>
                                 </div>
@@ -89,11 +89,11 @@ window.EngagementAssistant = {
                                     <div style="font-size: 1.3em; color: #666; font-weight: bold; width: 80px;">댓글</div>
                                     <div class="goal-controls" style="display: flex; align-items: center; gap: 8px;">
                                         <button onclick="EngagementAssistant.updateCurrentGoal('comments', -1)" style="width: 30px; height: 30px; font-size: 14px; border-radius: 50%; background: #667eea; color: white; border: none;">-</button>
-                                        <span style="display: flex; align-items: center; gap: 0px;">
-											<span id="current-postings" style="font-size: 1.5em; font-weight: bold;">0</span>
-											<span style="color: #666; font-size: 1.2em;">/</span>
-											<span id="current-postings-target" style="font-size: 1.3em;">0</span>
-										</span>
+                                        <span style="display: flex; align-items: center;">
+                                            <span id="current-comments" style="font-size: 1.5em; font-weight: bold;">0</span>
+                                            <span style="color: #666; font-size: 1.2em; margin: 0 4px;"> / </span>
+                                            <span id="current-comments-target" style="font-size: 1.5em;">0</span>
+                                        </span>
                                         <button onclick="EngagementAssistant.updateCurrentGoal('comments', 1)" style="width: 30px; height: 30px; font-size: 14px; border-radius: 50%; background: #667eea; color: white; border: none;">+</button>
                                     </div>
                                 </div>
@@ -102,11 +102,11 @@ window.EngagementAssistant = {
                                     <div style="font-size: 1.3em; color: #666; font-weight: bold; width: 80px;">팔로우</div>
                                     <div class="goal-controls" style="display: flex; align-items: center; gap: 8px;">
                                         <button onclick="EngagementAssistant.updateCurrentGoal('follows', -1)" style="width: 30px; height: 30px; font-size: 14px; border-radius: 50%; background: #667eea; color: white; border: none;">-</button>
-                                        <span style="display: flex; align-items: center; gap: 0px;">
-											<span id="current-postings" style="font-size: 1.5em; font-weight: bold;">0</span>
-											<span style="color: #666; font-size: 1.2em;">/</span>
-											<span id="current-postings-target" style="font-size: 1.3em;">0</span>
-										</span>
+                                        <span style="display: flex; align-items: center;">
+                                            <span id="current-follows" style="font-size: 1.5em; font-weight: bold;">0</span>
+                                            <span style="color: #666; font-size: 1.2em; margin: 0 4px;"> / </span>
+                                            <span id="current-follows-target" style="font-size: 1.5em;">0</span>
+                                        </span>
                                         <button onclick="EngagementAssistant.updateCurrentGoal('follows', 1)" style="width: 30px; height: 30px; font-size: 14px; border-radius: 50%; background: #667eea; color: white; border: none;">+</button>
                                     </div>
                                 </div>
@@ -123,7 +123,7 @@ window.EngagementAssistant = {
                         
                         <!-- 오른쪽 영역 (40%) - 계정 관리 -->
                         <div style="flex: 4; background: white; padding: 20px; border-radius: 8px; border: 2px solid #28a745; display: flex; flex-direction: column; min-height: 60px;">
-                            <h3 style="margin: 0 0 10px 0; text-align: center; font-size: 1.3em;">계정 관리</h3>
+                            <h3 style="margin: 0 0 10px 0; text-align: center; font-size: 1.3em;">⚙️ 계정 관리</h3>
                             
                             <!-- SNS 선택 -->
                             <div class="form-group" style="margin-bottom: 8px;">
@@ -160,8 +160,8 @@ window.EngagementAssistant = {
                                 <!-- 동적으로 채워짐 -->
                             </select>
                             
-                            <div style="text-align: center; margin-top: 25px;">
-                                <button onclick="EngagementAssistant.saveAccountList()" style="background: #667eea; font-size: 15px; padding: 8px 12px;">💾 목록 저장</button>
+                            <div style="text-align: center; margin-top: 10px;">
+                                <button onclick="EngagementAssistant.saveAccountList()" style="background: #667eea; font-size: 12px; padding: 8px 12px;">💾 목록 저장</button>
                             </div>
                         </div>
                     </div>
