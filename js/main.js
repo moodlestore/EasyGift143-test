@@ -40,42 +40,39 @@ window.AppState = {
 
     // 앱 상태 로드 (포스팅 포함)
     loadAppState: function() {
-        try {
-            const saved = localStorage.getItem('appState');
-            if (saved) {
-                const state = JSON.parse(saved);
-                this.currentMode = state.currentMode || 'free';
-                this.revenue = { ...this.revenue, ...state.revenue };
-                this.totalGoals = { ...this.totalGoals, ...state.totalGoals };
-                this.accountList = state.accountList || [];
-                this.accountGoals = state.accountGoals || {};
-                
-                // 기존 데이터 마이그레이션 (포스팅 목표가 없는 경우 추가)
-                if (this.accountGoals) {
-                    Object.keys(this.accountGoals).forEach(accountKey => {
-                        if (!this.accountGoals[accountKey].hasOwnProperty('postings')) {
-                            this.accountGoals[accountKey].postings = 0;
-                        }
-                        if (!this.accountGoals[accountKey].targets.hasOwnProperty('postings')) {
-                            const [sns] = accountKey.split('-');
-                            const defaultPostings = sns === 'x' ? 3 : 2; // X는 3개, 나머지는 2개
-                            this.accountGoals[accountKey].targets.postings = defaultPostings;
-                        }
-                    });
-                }
-                
-                // totalGoals에 포스팅 목표가 없으면 추가
-                if (!this.totalGoals.hasOwnProperty('postings')) {
-                    this.totalGoals.postings = 0;
-                }
-                if (!this.totalGoals.targets.hasOwnProperty('postings')) {
-                    this.totalGoals.targets.postings = 21; // 기본값
-                }
+    try {
+        const saved = localStorage.getItem('appState');
+        if (saved) {
+            const state = JSON.parse(saved);
+            this.currentMode = state.currentMode || 'free';
+            this.revenue = { ...this.revenue, ...state.revenue };
+            this.totalGoals = { ...this.totalGoals, ...state.totalGoals };
+            this.accountList = state.accountList || [];
+            this.accountGoals = state.accountGoals || {};
+            
+            // 👇 이 부분을 추가
+            // 기존 계정들의 목표값을 새로운 기본값으로 강제 업데이트
+            if (this.accountGoals) {
+                Object.keys(this.accountGoals).forEach(accountKey => {
+                    const [sns] = accountKey.split('-');
+                    const newTargets = {
+                        instagram: { postings: 2, likes: 40, comments: 20, follows: 20 },
+                        x: { postings: 15, likes: 50, comments: 30, follows: 30 },
+                        threads: { postings: 2, likes: 40, comments: 20, follows: 20 }
+                    };
+                    
+                    // 기존 계정의 목표값을 새로운 값으로 덮어쓰기
+                    if (newTargets[sns]) {
+                        this.accountGoals[accountKey].targets = newTargets[sns];
+                    }
+                });
             }
-        } catch (e) {
-            console.log('상태 로드 오류:', e);
+            // 👆 여기까지 추가
         }
-    },
+    } catch (e) {
+        console.log('상태 로드 오류:', e);
+    }
+},
     
     // 이벤트 리스너 설정
     setupEventListeners: function() {
