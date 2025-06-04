@@ -1,17 +1,6 @@
-// 인게이지먼트 어시스턴트 모듈
 window.EngagementAssistant = {
-    // 댓글 템플릿
-    templates: {
-        praise: ["정말 예쁘네요!", "멋진 사진이에요!", "스타일이 좋네요!", "완전 예뻐요!", "센스가 대박이에요!"],
-        question: ["어디서 구매하셨나요?", "브랜드가 궁금해요!", "가격대가 어떻게 되나요?", "링크 공유 가능한가요?", "어떤 사이즈인가요?"],
-        empathy: ["저도 같은 생각이에요!", "공감합니다!", "정말 그래요!", "맞아요!", "완전 동감이에요!"],
-        recommendation: ["추천해주셔서 감사해요!", "꼭 써보고 싶어요!", "정보 감사합니다!", "도움이 되었어요!", "좋은 정보네요!"]
-    },
-
-    // 현재 선택된 계정 변수
     currentSelectedAccount: null,
 
-    // HTML 반환 - 전체 HTML 코드
     getHTML: function() {
         const mode = AppState.currentMode;
         
@@ -31,34 +20,26 @@ window.EngagementAssistant = {
                     </div>
                 ` : ''}
 
-                <!-- 일일 목표 섹션 -->
                 <div class="section">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h2 style="margin: 0;">🎯 오늘의 목표</h2>
                     </div>
                     
-                    <!-- 6:4 비율 레이아웃 -->
                     <div style="display: flex; gap: 20px; align-items: stretch; min-height: 80px;">
-                        <!-- 왼쪽 영역 (60%) - 선택된 계정 현황 -->
                         <div style="flex: 6; background: white; padding: 20px; border-radius: 8px; border: 2px solid #667eea; display: flex; flex-direction: column; position: relative;">
-                            <!-- 좌측 상단: 날짜 -->
                             <div style="position: absolute; top: 10px; left: 20px;">
                                 <div style="color: #666; font-size: 20px; font-weight: bold;">2024.06.03</div>
                             </div>
                             
-                            <!-- 우측 상단: 총 진행률 -->
                             <div style="position: absolute; top: 10px; right: 20px; font-size: 1.1em; color: #667eea;">
                                 <strong>총 진행률:</strong> <span id="overallProgress" style="font-size: 1.2em; color: #333;">0%</span>
                             </div>
                             
-                            <!-- 상단 중앙: 계정명 -->
                             <div style="text-align: center; margin-top: 55px; margin-bottom: 20px;">
                                 <h3 style="margin: 0; font-size: 1.6em; color: #333;"><span id="selectedAccountName">계정을 선택하세요</span></h3>
                             </div>
                             
-                            <!-- 중앙: 목표 상세 (포스팅 추가) -->
                             <div style="position: absolute; top: 60%; left: 40px; transform: translateY(-50%); display: flex; flex-direction: column; gap: 35px;">
-                                <!-- 포스팅 목표 추가 -->
                                 <div style="display: flex; align-items: center; justify-content: flex-start; min-width: 300px;">
                                     <div style="font-size: 1.3em; color: #666; font-weight: bold; width: 80px;">포스팅</div>
                                     <div class="goal-controls" style="display: flex; align-items: center; gap: 8px;">
@@ -112,7 +93,6 @@ window.EngagementAssistant = {
                                 </div>
                             </div>
                             
-                            <!-- 우측: 캐릭터와 진행률 바 -->
                             <div style="position: absolute; right: 25px; top: 60%; transform: translateY(-50%); display: flex; align-items: center; gap: 35px;">
                                 <div style="width: 30px; height: 230px; background: #e9ecef; border-radius: 15px; position: relative; border: 2px solid #dee2e6;">
                                     <div id="verticalProgress" style="position: absolute; bottom: 0; width: 100%; background: #28a745; border-radius: 13px; transition: height 0.3s ease; height: 0%;"></div>
@@ -121,13 +101,11 @@ window.EngagementAssistant = {
                             </div>
                         </div>
                         
-                        <!-- 오른쪽 영역 (40%) - 계정 관리 -->
                         <div style="flex: 4; background: white; padding: 20px; border-radius: 8px; border: 2px solid #28a745; display: flex; flex-direction: column; min-height: 60px;">
                             <h3 style="margin: 0 0 10px 0; text-align: center; font-size: 1.3em;">계정 관리</h3>
                             
-                            <!-- SNS 선택 -->
                             <div class="form-group" style="margin-bottom: 8px;">
-                                <label for="snsSelect" style="font-size: 14px; margin-bottom: 5px;">SNS 플랫폼:</label>
+                                <label for="snsSelect" style="font-size: 14px; margin-bottom: 5px;">SNS 플랫폼</label>
                                 <select id="snsSelect" style="padding: 10px; font-size: 14px;">
                                     <option value="instagram">Instagram</option>
                                     <option value="x">X (Twitter)</option>
@@ -135,9 +113,8 @@ window.EngagementAssistant = {
                                 </select>
                             </div>
                             
-                            <!-- 국가 선택 -->
                             <div class="form-group" style="margin-bottom: 15px;">
-                                <label for="languageSelect" style="font-size: 14px; margin-bottom: 5px;">국가:</label>
+                                <label for="languageSelect" style="font-size: 14px; margin-bottom: 5px;">국가</label>
                                 <select id="languageSelect" style="padding: 10px; font-size: 14px;">
                                     <option value="korea">한국</option>
                                     <option value="japan">일본</option>
@@ -146,61 +123,31 @@ window.EngagementAssistant = {
                                 </select>
                             </div>
                             
-                            <!-- 추가/제거 버튼 -->
                             <div style="display: flex; gap: 10px; margin-bottom: 15px;">
                                 <button onclick="EngagementAssistant.addAccount()" style="flex: 1; background: #28a745; font-size: 14px; padding: 10px;">➕ 추가</button>
                                 <button onclick="EngagementAssistant.removeAccount()" style="flex: 1; background: #dc3545; font-size: 14px; padding: 10px;">➖ 제거</button>
                             </div>
                             
-                            <!-- 계정 목록 -->
                             <div style="margin-bottom: 10px;">
-                                <label style="font-size: 14px; margin-bottom: 5px;">활성 계정 목록:</label>
+                                <label style="font-size: 14px; margin-bottom: 5px;">활성 계정 목록</label>
                             </div>
-                            <select id="accountList" size="3" style="width: 100%; font-size: 14px; padding: 5px; flex: 1;" onchange="EngagementAssistant.selectAccount()">
-                                <!-- 동적으로 채워짐 -->
-                            </select>
-                            
-                            <div style="text-align: center; margin-top: 20px;">
-                                <button onclick="EngagementAssistant.saveAccountList()" style="background: #667eea; font-size: 14px; padding: 10px 50px;">목록 저장</button>
-                            </div>
-                        </div>
-                    </div>
-                                    
-                    <!-- 번역 어시스턴트 섹션 -->
-                    <div class="section" style="margin-top: 30px;">
-                        <h2>🔤 번역 어시스턴트</h2>
-                        <div class="form-group">
-                            <label>한국어 댓글 입력:</label>
-                            <textarea id="commentInput" rows="3" placeholder="번역할 문장을 입력하세요"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>톤앤매너:</label>
-                            <select id="toneSelector">
-                                <option value="friendly">친근한</option>
-                                <option value="polite">정중한</option>
-                                <option value="casual">캐주얼</option>
+                            <select id="accountList" size="5" style="width: 100%; font-size: 14px; padding: 5px; flex: 1;" onchange="EngagementAssistant.selectAccount()">
                             </select>
                         </div>
-                        <button onclick="EngagementAssistant.translateComment()">번역하기</button>
-                        <div id="translationResult" style="margin-top: 15px;"></div>
                     </div>
                 </div>
             </div>
         `;
     },
 
-    // 초기화
     initialize: function() {
-        this.checkMidnightReset(); // 자정 리셋 체크
+        this.checkMidnightReset();
         this.restoreGoalsState();
         this.initializeAccountList();
-        AppState.templates = this.templates; // 템플릿을 AppState에도 저장
     },
 
-    // 목표 상태 복원
     restoreGoalsState: function() {
         setTimeout(() => {
-            // 전체 목표 복원
             ['postings', 'likes', 'comments', 'follows'].forEach(type => {
                 const element = document.getElementById(`total-${type}`);
                 const targetElement = document.getElementById(`total-${type}-target`);
@@ -215,96 +162,6 @@ window.EngagementAssistant = {
         }, 100);
     },
 
-    // 번역 함수
-    translateComment: function() {
-        const input = document.getElementById('commentInput').value.trim();
-        const tone = document.getElementById('toneSelector').value;
-        const result = document.getElementById('translationResult');
-        
-        if (!input) {
-            result.innerHTML = '<p style="color: #dc3545;">번역할 텍스트를 입력해주세요.</p>';
-            return;
-        }
-        
-        // 로딩 표시
-        result.innerHTML = '<p>번역 중... ⏳</p>';
-        
-        // GPT API 호출 (실제 구현에서는 여기서 API 호출)
-        if (AppState.currentMode === 'pro') {
-            this.callGPTTranslation(input, tone, result);
-        } else {
-            // Free 모드에서는 시뮬레이션
-            setTimeout(() => {
-                const translations = this.getSimulatedTranslation(input, tone);
-                this.displayTranslationResult(input, translations, tone, result);
-            }, 1000);
-        }
-    },
-
-    // GPT API 호출 (Pro 모드)
-    callGPTTranslation: function(input, tone, resultElement) {
-        // 실제 구현에서는 여기서 GPT API 호출
-        // 현재는 시뮬레이션으로 구현
-        setTimeout(() => {
-            const translations = this.getSimulatedTranslation(input, tone);
-            this.displayTranslationResult(input, translations, tone, resultElement);
-        }, 1500);
-    },
-
-    // 번역 결과 표시
-    displayTranslationResult: function(original, translations, tone, resultElement) {
-        resultElement.innerHTML = `
-            <div class="translation-result">
-                <h4>번역 결과 (${this.getToneName(tone)} 톤):</h4>
-                <div class="translation-item translation-korean">
-                    <strong>🇰🇷 한국어:</strong> ${original}
-                </div>
-                <div class="translation-item translation-japanese">
-                    <strong>🇯🇵 일본어:</strong> ${translations.japanese} 
-                    <button class="copy-btn" onclick="Utils.copyText('${translations.japanese}')">복사</button>
-                </div>
-                <div class="translation-item translation-french">
-                    <strong>🇫🇷 프랑스어:</strong> ${translations.french} 
-                    <button class="copy-btn" onclick="Utils.copyText('${translations.french}')">복사</button>
-                </div>
-                <div style="margin-top: 15px; padding: 10px; background: #e2e3e5; border-radius: 5px; font-size: 14px;">
-                    <strong>💡 사용 팁:</strong> 각 언어의 문화적 특성을 고려하여 번역했습니다. 복사 버튼을 클릭하여 바로 사용하세요!
-                </div>
-            </div>
-        `;
-    },
-
-    // 톤 이름 변환
-    getToneName: function(tone) {
-        const names = {
-            friendly: '친근한',
-            polite: '정중한',
-            casual: '캐주얼'
-        };
-        return names[tone] || tone;
-    },
-
-    // 시뮬레이션된 번역 결과
-    getSimulatedTranslation: function(text, tone) {
-        const translations = {
-            friendly: {
-                japanese: text.replace(/정말/g, "本当に").replace(/예쁘네요/g, "可愛いですね").replace(/어디서/g, "どこで").replace(/구매하셨나요/g, "購入されましたか") || "本当に素敵ですね！",
-                french: text.replace(/정말/g, "vraiment").replace(/예쁘네요/g, "c'est joli").replace(/어디서/g, "où").replace(/구매하셨나요/g, "avez-vous acheté") || "C'est vraiment joli !"
-            },
-            polite: {
-                japanese: text.replace(/정말/g, "とても").replace(/예쁘네요/g, "美しいですね").replace(/어디서/g, "どちらで").replace(/구매하셨나요/g, "お求めになりましたか") || "とても美しいですね。",
-                french: text.replace(/정말/g, "très").replace(/예쁘네요/g, "c'est très élégant").replace(/어디서/g, "où").replace(/구매하셨나요/g, "avez-vous acquis") || "C'est très élégant."
-            },
-            casual: {
-                japanese: text.replace(/정말/g, "マジで").replace(/예쁘네요/g, "可愛い！").replace(/어디서/g, "どこで").replace(/구매하셨나요/g, "買ったの？") || "マジで可愛い！",
-                french: text.replace(/정말/g, "super").replace(/예쁘네요/g, "c'est mignon").replace(/어디서/g, "où").replace(/구매하셨나요/g, "tu l'as acheté où") || "C'est super mignon !"
-            }
-        };
-        
-        return translations[tone] || translations.friendly;
-    },
-
-    // 계정 목록 초기화
     initializeAccountList: function() {
         if (!AppState.accountList) {
             AppState.accountList = [
@@ -314,23 +171,18 @@ window.EngagementAssistant = {
             ];
         }
         this.updateAccountListDisplay();
-        
-        // 🔥 새로 추가: 저장된 선택 항목 복원 또는 첫 번째 항목 자동 선택
         this.restoreLastSelectedAccount();
     },
 
-    // 🔥 새로 추가: 마지막 선택된 계정 복원 함수
     restoreLastSelectedAccount: function() {
         setTimeout(() => {
             const accountList = document.getElementById('accountList');
             if (!accountList || accountList.options.length === 0) return;
             
-            // 저장된 마지막 선택 계정 가져오기
             const lastSelectedAccount = Utils.safeStorage.get('lastSelectedAccount', '');
-            let targetIndex = 0; // 기본값: 첫 번째 항목
+            let targetIndex = 0;
             
             if (lastSelectedAccount) {
-                // 저장된 계정이 현재 목록에 있는지 확인
                 for (let i = 0; i < accountList.options.length; i++) {
                     if (accountList.options[i].value === lastSelectedAccount) {
                         targetIndex = i;
@@ -339,19 +191,16 @@ window.EngagementAssistant = {
                 }
             }
             
-            // 계정 선택 및 UI 업데이트
             accountList.selectedIndex = targetIndex;
             this.currentSelectedAccount = accountList.options[targetIndex].value;
             this.updateCurrentAccountDisplay();
             
-            // 선택된 항목 시각적 표시 (옵션)
             if (lastSelectedAccount && targetIndex > 0) {
                 Utils.showAchievement(`마지막 선택 계정 "${this.getAccountDisplayName(...this.currentSelectedAccount.split('-'))}"이 자동으로 선택되었습니다! 🎯`);
             }
-        }, 200); // DOM 업데이트 대기
+        }, 200);
     },
 
-    // 계정 추가
     addAccount: function() {
         const sns = document.getElementById('snsSelect').value;
         const language = document.getElementById('languageSelect').value;
@@ -367,7 +216,6 @@ window.EngagementAssistant = {
         }
     },
 
-    // 계정 제거
     removeAccount: function() {
         const accountList = document.getElementById('accountList');
         const selectedOption = accountList.options[accountList.selectedIndex];
@@ -379,7 +227,6 @@ window.EngagementAssistant = {
             if (index > -1) {
                 AppState.accountList.splice(index, 1);
                 
-                // 🔥 수정: 삭제된 계정이 마지막 선택 계정이었다면 저장소에서도 제거
                 const lastSelectedAccount = Utils.safeStorage.get('lastSelectedAccount', '');
                 if (lastSelectedAccount === accountKey) {
                     Utils.safeStorage.remove('lastSelectedAccount');
@@ -390,17 +237,14 @@ window.EngagementAssistant = {
                 AppState.saveAppState();
                 Utils.showAchievement(`${selectedOption.text} 계정이 제거되었습니다!`);
                 
-                // 🔥 수정: 삭제 후 첫 번째 항목 자동 선택
                 setTimeout(() => {
                     const updatedAccountList = document.getElementById('accountList');
                     if (updatedAccountList && updatedAccountList.options.length > 0) {
                         updatedAccountList.selectedIndex = 0;
                         this.currentSelectedAccount = updatedAccountList.options[0].value;
                         this.updateCurrentAccountDisplay();
-                        // 새로 선택된 계정 저장
                         Utils.safeStorage.set('lastSelectedAccount', this.currentSelectedAccount);
                     } else {
-                        // 계정이 모두 삭제된 경우
                         this.currentSelectedAccount = null;
                         this.updateCurrentAccountDisplay();
                     }
@@ -411,7 +255,6 @@ window.EngagementAssistant = {
         }
     },
 
-    // 계정 목록 표시 업데이트
     updateAccountListDisplay: function() {
         const accountList = document.getElementById('accountList');
         if (!accountList) return;
@@ -427,7 +270,6 @@ window.EngagementAssistant = {
         });
     },
 
-    // 계정 표시명 생성
     getAccountDisplayName: function(sns, language) {
         const snsNames = {
             instagram: 'Instagram',
@@ -442,13 +284,11 @@ window.EngagementAssistant = {
             canada: '캐나다'
         };
         
-        // 텍스트 정렬을 위해 고정 길이 문자열 사용
         const snsFormatted = snsNames[sns].padEnd(10, ' ');
         
         return `${snsFormatted} / ${languageNames[language]}`;
     },
 
-    // 🔥 수정: 계정 선택 함수 (마지막 선택 저장 추가)
     selectAccount: function() {
         const accountList = document.getElementById('accountList');
         const selectedOption = accountList.options[accountList.selectedIndex];
@@ -456,13 +296,10 @@ window.EngagementAssistant = {
         if (selectedOption) {
             this.currentSelectedAccount = selectedOption.value;
             this.updateCurrentAccountDisplay();
-            
-            // 🔥 새로 추가: 마지막 선택된 계정 저장
             Utils.safeStorage.set('lastSelectedAccount', this.currentSelectedAccount);
         }
     },
 
-    // 현재 계정 표시 업데이트
     updateCurrentAccountDisplay: function() {
         if (!this.currentSelectedAccount) {
             document.getElementById('selectedAccountName').textContent = '계정을 선택하세요';
@@ -473,10 +310,8 @@ window.EngagementAssistant = {
         const displayName = this.getAccountDisplayName(sns, language);
         document.getElementById('selectedAccountName').textContent = displayName;
         
-        // 해당 계정의 목표 데이터 가져오기
         const accountGoals = this.getAccountGoals(this.currentSelectedAccount);
         
-        // UI 업데이트 (포스팅 추가)
         document.getElementById('current-postings').textContent = accountGoals.postings;
         document.getElementById('current-postings-target').textContent = accountGoals.targets.postings;
         document.getElementById('current-likes').textContent = accountGoals.likes;
@@ -489,14 +324,12 @@ window.EngagementAssistant = {
         this.updateCurrentProgress();
     },
 
-    // 계정별 목표 가져오기
     getAccountGoals: function(accountKey) {
         if (!AppState.accountGoals) {
             AppState.accountGoals = {};
         }
         
         if (!AppState.accountGoals[accountKey]) {
-            // 기본 목표 설정 (계정별로 다르게 설정 가능)
             const [sns, language] = accountKey.split('-');
             AppState.accountGoals[accountKey] = {
                 postings: 0, likes: 0, comments: 0, follows: 0,
@@ -507,7 +340,6 @@ window.EngagementAssistant = {
         return AppState.accountGoals[accountKey];
     },
 
-    // 기본 목표 설정 (포스팅 포함)
     getDefaultTargets: function(sns, language) {
         const baseTargets = {
             instagram: { postings: 2, likes: 40, comments: 20, follows: 20 },
@@ -518,7 +350,6 @@ window.EngagementAssistant = {
         return baseTargets[sns] || { postings: 2, likes: 3, comments: 1, follows: 1 };
     },
 
-    // 현재 계정 목표 업데이트
     updateCurrentGoal: function(type, change) {
         if (!this.currentSelectedAccount) {
             Utils.showAchievement('계정을 먼저 선택해주세요.', 'error');
@@ -532,11 +363,9 @@ window.EngagementAssistant = {
         
         accountGoals[type] = newValue;
         
-        // UI 업데이트
         document.getElementById(`current-${type}`).textContent = newValue;
         this.updateCurrentProgress();
         
-        // 목표 달성 체크
         if (newValue === target) {
             Utils.showAchievement(`${this.currentSelectedAccount} ${type} 목표 달성! 🎉`);
         }
@@ -544,7 +373,6 @@ window.EngagementAssistant = {
         AppState.saveAppState();
     },
 
-    // 현재 계정 진행률 업데이트
     updateCurrentProgress: function() {
         if (!this.currentSelectedAccount) {
             this.updateProgressCharacter(0);
@@ -556,14 +384,10 @@ window.EngagementAssistant = {
         const totalTarget = accountGoals.targets.postings + accountGoals.targets.likes + accountGoals.targets.comments + accountGoals.targets.follows;
         const percentage = totalTarget > 0 ? (totalCurrent / totalTarget) * 100 : 0;
         
-        // 캐릭터 및 세로 진행률 업데이트
         this.updateProgressCharacter(percentage);
-        
-        // 전체 진행률도 업데이트
         this.updateTotalProgress();
     },
 
-    // 전체 진행률 업데이트 (포스팅 포함)
     updateTotalProgress: function() {
         let totalCurrent = 0;
         let totalTarget = 0;
@@ -582,19 +406,6 @@ window.EngagementAssistant = {
         }
     },
 
-    // 🔥 수정: 계정 목록 저장 (마지막 선택 계정도 함께 저장)
-    saveAccountList: function() {
-        AppState.saveAppState();
-        
-        // 현재 선택된 계정도 저장
-        if (this.currentSelectedAccount) {
-            Utils.safeStorage.set('lastSelectedAccount', this.currentSelectedAccount);
-        }
-        
-        Utils.showAchievement('계정 목록이 저장되었습니다! 💾');
-    },
-
-    // 자정 리셋 체크
     checkMidnightReset: function() {
         const lastResetDate = Utils.safeStorage.get('lastResetDate', '');
         const today = new Date().toDateString();
@@ -606,9 +417,7 @@ window.EngagementAssistant = {
         }
     },
 
-    // 모든 목표 리셋 (포스팅 포함)
     resetAllGoals: function() {
-        // 모든 계정 목표 리셋
         if (AppState.accountGoals) {
             Object.keys(AppState.accountGoals).forEach(accountKey => {
                 AppState.accountGoals[accountKey].postings = 0;
@@ -618,7 +427,6 @@ window.EngagementAssistant = {
             });
         }
         
-        // UI 업데이트
         if (this.currentSelectedAccount) {
             this.updateCurrentAccountDisplay();
         }
@@ -626,33 +434,30 @@ window.EngagementAssistant = {
         AppState.saveAppState();
     },
 
-    // 진행률에 따른 캐릭터 업데이트
     updateProgressCharacter: function(percentage) {
         const characterElement = document.getElementById('progressCharacter');
         const verticalProgress = document.getElementById('verticalProgress');
         
         if (!characterElement || !verticalProgress) return;
         
-        // 세로 진행률 바 업데이트
         verticalProgress.style.height = `${percentage}%`;
         
-        // 진행률에 따른 캐릭터 변경
-        let character = '😴'; // 기본 (0%)
+        let character = '😴';
         
         if (percentage >= 100) {
-            character = '🎉'; // 완료
+            character = '🎉';
             verticalProgress.style.background = '#28a745';
         } else if (percentage >= 75) {
-            character = '🤩'; // 거의 완료
+            character = '🤩';
             verticalProgress.style.background = 'linear-gradient(0deg, #28a745, #20c997)';
         } else if (percentage >= 50) {
-            character = '😊'; // 절반 완료
+            character = '😊';
             verticalProgress.style.background = 'linear-gradient(0deg, #ffc107, #fd7e14)';
         } else if (percentage >= 25) {
-            character = '🙂'; // 시작
+            character = '🙂';
             verticalProgress.style.background = 'linear-gradient(0deg, #667eea, #764ba2)';
         } else if (percentage > 0) {
-            character = '😐'; // 조금 시작
+            character = '😐';
             verticalProgress.style.background = 'linear-gradient(0deg, #6c757d, #495057)';
         }
         
