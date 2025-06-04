@@ -1,403 +1,133 @@
-// 전역 상태 관리 - posts 필드 추가 및 수정
-window.AppState = {
-    currentMode: 'free', // 'free' 또는 'pro'
-    currentPage: 'product-register',
-    revenue: {
-        affiliate: 0,
-        other: 0,
-        total: 0
-    },
-    isLoading: false,
-    // posts 필드 추가된 dailyGoals (호환성을 위해 유지)
-    dailyGoals: {
-        korean: { posts: 0, likes: 0, comments: 0, follows: 0, targets: { posts: 1, likes: 15, comments: 5, follows: 3 } },
-        japanese: { posts: 0, likes: 0, comments: 0, follows: 0, targets: { posts: 1, likes: 12, comments: 4, follows: 3 } },
-        french: { posts: 0, likes: 0, comments: 0, follows: 0, targets: { posts: 1, likes: 10, comments: 3, follows: 2 } }
-    },
-    // posts 필드 추가된 totalGoals
-    totalGoals: {
-        posts: 0, likes: 0, comments: 0, follows: 0,
-        targets: { posts: 3, likes: 37, comments: 12, follows: 8 }
-    },
-    accountList: [],
-    accountGoals: {}, // 계정별 개별 목표
-    
-    // 앱 초기화
-    initialize: function() {
-        this.loadAppState();
-        this.updateModeDisplay();
-        this.setupEventListeners();
-    },
-    
-    // 앱 상태 저장 - posts 필드 포함
-    saveAppState: function() {
-        try {
-            localStorage.setItem('appState', JSON.stringify({
-                currentMode: this.currentMode,
-                revenue: this.revenue,
-                dailyGoals: this.dailyGoals,
-                totalGoals: this.totalGoals,
-                accountList: this.accountList,
-                accountGoals: this.accountGoals
-            }));
-        } catch (e) {
-            console.log('상태 저장 오류:', e);
-        }
-    },
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EasyGift143 통합 대시보드</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- 헤더 -->
+        <header class="dashboard-header">
+            <h1>🎁 EasyGift143 통합 대시보드</h1>
+            <div class="mode-selector">
+                <span class="mode-label" id="currentMode">Free 모드</span>
+                <button id="upgradeModeBtn" class="mode-toggle-btn" onclick="AppState.toggleMode()">
+                    Pro 모드로 업그레이드
+                </button>
+            </div>
+        </header>
 
-    // 앱 상태 로드 - posts 필드 호환성 처리
-    loadAppState: function() {
-        try {
-            const saved = localStorage.getItem('appState');
-            if (saved) {
-                const state = JSON.parse(saved);
-                this.currentMode = state.currentMode || 'free';
-                this.revenue = { ...this.revenue, ...state.revenue };
-                
-                // dailyGoals 호환성 처리 (posts 필드 추가)
-                if (state.dailyGoals) {
-                    Object.keys(this.dailyGoals).forEach(lang => {
-                        if (state.dailyGoals[lang]) {
-                            this.dailyGoals[lang] = {
-                                posts: state.dailyGoals[lang].posts || 0,
-                                likes: state.dailyGoals[lang].likes || 0,
-                                comments: state.dailyGoals[lang].comments || 0,
-                                follows: state.dailyGoals[lang].follows || 0,
-                                targets: {
-                                    posts: state.dailyGoals[lang].targets?.posts || this.dailyGoals[lang].targets.posts,
-                                    likes: state.dailyGoals[lang].targets?.likes || this.dailyGoals[lang].targets.likes,
-                                    comments: state.dailyGoals[lang].targets?.comments || this.dailyGoals[lang].targets.comments,
-                                    follows: state.dailyGoals[lang].targets?.follows || this.dailyGoals[lang].targets.follows
-                                }
-                            };
-                        }
-                    });
-                }
-                
-                // totalGoals 호환성 처리 (posts 필드 추가)
-                if (state.totalGoals) {
-                    this.totalGoals = {
-                        posts: state.totalGoals.posts || 0,
-                        likes: state.totalGoals.likes || 0,
-                        comments: state.totalGoals.comments || 0,
-                        follows: state.totalGoals.follows || 0,
-                        targets: {
-                            posts: state.totalGoals.targets?.posts || this.totalGoals.targets.posts,
-                            likes: state.totalGoals.targets?.likes || this.totalGoals.targets.likes,
-                            comments: state.totalGoals.targets?.comments || this.totalGoals.targets.comments,
-                            follows: state.totalGoals.targets?.follows || this.totalGoals.targets.follows
-                        }
-                    };
-                }
-                
-                this.accountList = state.accountList || [];
-                
-                // accountGoals 호환성 처리 (posts 필드 추가)
-                this.accountGoals = state.accountGoals || {};
-                Object.keys(this.accountGoals).forEach(accountKey => {
-                    if (!this.accountGoals[accountKey].hasOwnProperty('posts')) {
-                        this.accountGoals[accountKey].posts = 0;
-                    }
-                    if (!this.accountGoals[accountKey].targets.hasOwnProperty('posts')) {
-                        this.accountGoals[accountKey].targets.posts = 1; // 기본값
-                    }
-                });
-            }
-        } catch (e) {
-            console.log('상태 로드 오류:', e);
-        }
-    },
-    
-    // 이벤트 리스너 설정
-    setupEventListeners: function() {
-        // 모달 외부 클릭 시 닫기
-        window.onclick = function(event) {
-            const modal = document.getElementById('modeModal');
-            if (event.target === modal) {
-                AppState.closeModeModal();
-            }
-        };
-    },
-    
-    // 모드 전환
-    toggleMode: function() {
-        if (this.currentMode === 'free') {
-            document.getElementById('modeModal').style.display = 'block';
-            this.updateRevenueDisplay();
-        } else {
-            // Pro -> Free 다운그레이드
-            if (confirm('Free 모드로 다운그레이드하시겠습니까?')) {
-                this.currentMode = 'free';
-                this.updateModeDisplay();
-                this.saveAppState();
-                
-                // 분석 대시보드에 있으면 제품 등록으로 이동
-                if (this.currentPage === 'analytics-dashboard') {
-                    Navigation.showPage('product-register');
-                    // 탭 활성화 수정
-                    document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
-                    document.querySelector('[data-page="product-register"]').classList.add('active');
-                }
-                
-                // 현재 페이지 새로고침
-                Navigation.showPage(this.currentPage);
-            }
-        }
-    },
-    
-    // 모드 표시 업데이트
-    updateModeDisplay: function() {
-        const currentModeEl = document.getElementById('currentMode');
-        const upgradeBtnEl = document.getElementById('upgradeModeBtn');
-        const analyticsTab = document.getElementById('analyticsTab');
-        
-        if (this.currentMode === 'pro') {
-            currentModeEl.textContent = 'Pro 모드';
-            currentModeEl.style.color = '#28a745';
-            upgradeBtnEl.textContent = 'Free 모드로 변경';
-            upgradeBtnEl.className = 'mode-toggle-btn pro-active';
-            analyticsTab.classList.remove('disabled');
-        } else {
-            currentModeEl.textContent = 'Free 모드';
-            currentModeEl.style.color = '#6c757d';
-            upgradeBtnEl.textContent = 'Pro 모드로 업그레이드';
-            upgradeBtnEl.className = 'mode-toggle-btn';
-            analyticsTab.classList.add('disabled');
-        }
-    },
-    
-    // 수익 표시 업데이트
-    updateRevenueDisplay: function() {
-        const revenue = this.revenue;
-        
-        document.getElementById('affiliateRevenue').textContent = `$${revenue.affiliate}`;
-        document.getElementById('otherRevenue').textContent = `$${revenue.other}`;
-        document.getElementById('totalRevenue').textContent = `$${revenue.total}`;
-        
-        const progress = Math.min((revenue.total / 50) * 100, 100);
-        document.getElementById('revenueProgress').style.width = `${progress}%`;
-        
-        const upgradeBtn = document.getElementById('upgradeBtn');
-        const upgradeMessage = document.getElementById('upgradeMessage');
-        
-        if (revenue.total >= 50) {
-            upgradeBtn.disabled = false;
-            upgradeMessage.textContent = 'Pro 모드 업그레이드를 권장합니다!';
-            upgradeMessage.style.color = '#28a745';
-        } else {
-            upgradeBtn.disabled = true;
-            upgradeMessage.textContent = `$${(50 - revenue.total).toFixed(2)} 더 필요합니다.`;
-            upgradeMessage.style.color = '#dc3545';
-        }
-    },
-    
-    // 강제 업그레이드 (테스트용)
-    forceUpgrade: function() {
-        this.currentMode = 'pro';
-        this.updateModeDisplay();
-        this.saveAppState();
-        this.closeModeModal();
-        
-        // 현재 페이지 새로고침
-        Navigation.showPage(this.currentPage);
-        Utils.showAchievement('Pro 모드가 활성화되었습니다! (테스트 모드)');
-    },
-    
-    // 모드 업그레이드
-    upgradeMode: function() {
-        this.currentMode = 'pro';
-        this.updateModeDisplay();
-        this.saveAppState();
-        this.closeModeModal();
-        
-        // 현재 페이지 새로고침
-        Navigation.showPage(this.currentPage);
-        Utils.showAchievement('Pro 모드가 활성화되었습니다!');
-    },
-    
-    // 모달 닫기
-    closeModeModal: function() {
-        document.getElementById('modeModal').style.display = 'none';
-    },
-    
-    // Pro 모드 필요 알림
-    showProModeRequired: function() {
-        alert('이 기능은 Pro 모드에서만 사용할 수 있습니다.\n월 $50 이상 수익 달성 후 업그레이드하세요.');
-    }
-};
+        <!-- 네비게이션 탭 -->
+        <nav class="main-nav">
+            <button class="nav-tab active" data-page="product-register">
+                📝 제품 등록
+            </button>
+            <button class="nav-tab" data-page="engagement-assistant">
+                💬 SNS 성장 도우미
+            </button>
+            <button class="nav-tab disabled" data-page="analytics-dashboard" id="analyticsTab">
+                📊 분석 대시보드
+                <span class="pro-badge">PRO</span>
+            </button>
+        </nav>
 
-// 네비게이션 관리 - 수정 없음
-window.Navigation = {
-    // 네비게이션 설정
-    setupNavigation: function() {
-        const navTabs = document.querySelectorAll('.nav-tab');
-        navTabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                if (this.classList.contains('disabled')) {
-                    AppState.showProModeRequired();
-                    return;
-                }
-                
-                const page = this.getAttribute('data-page');
-                
-                // 활성 탭 변경
-                navTabs.forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                
-                // 페이지 표시
-                Navigation.showPage(page);
-            });
-        });
-    },
-    
-    // 페이지 표시
-    showPage: function(pageName) {
-        AppState.currentPage = pageName;
-        Utils.updateLastSync();
-        
-        const content = document.getElementById('page-content');
-        
-        // 로딩 표시
-        this.showLoading(true);
-        
-        setTimeout(() => {
-            switch(pageName) {
-                case 'product-register':
-                    content.innerHTML = ProductRegister.getHTML();
-                    ProductRegister.initialize();
-                    break;
-                case 'engagement-assistant':
-                    content.innerHTML = EngagementAssistant.getHTML();
-                    EngagementAssistant.initialize();
-                    break;
-                case 'analytics-dashboard':
-                    content.innerHTML = Analytics.getHTML();
-                    Analytics.initialize();
-                    break;
-                default:
-                    content.innerHTML = '<h2>페이지를 찾을 수 없습니다</h2>';
-            }
+        <!-- 페이지 컨테이너 -->
+        <main class="page-container">
+            <div id="loading" class="loading-overlay" style="display: none;">
+                <div class="loading-spinner"></div>
+                <p>페이지를 로드하는 중...</p>
+            </div>
             
-            this.showLoading(false);
-        }, 300); // 로딩 시뮬레이션
-    },
-    
-    // 로딩 표시
-    showLoading: function(show) {
-        const loading = document.getElementById('loading');
-        loading.style.display = show ? 'block' : 'none';
-    }
-};
+            <div id="page-content" class="page-content">
+                <!-- 동적 페이지 로드 영역 -->
+            </div>
+        </main>
 
-// 유틸리티 함수 - 수정 없음
-window.Utils = {
-    // 마지막 동기화 시간 업데이트
-    updateLastSync: function() {
-        const now = new Date().toLocaleTimeString('ko-KR');
-        document.getElementById('lastSync').textContent = `마지막 동기화: ${now}`;
-    },
+        <!-- 푸터 -->
+        <footer class="dashboard-footer">
+            <div class="version-info">
+                <strong>v2.1.3-beta</strong> by IdeaForest24
+            </div>
+            <div class="status-info">
+                <span id="connectionStatus">🟢 연결됨</span>
+                <span id="lastSync">마지막 동기화: 없음</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 모드 전환 모달 -->
+    <div id="modeModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="AppState.closeModeModal()">&times;</span>
+            <h2>Pro 모드로 업그레이드</h2>
+            <div class="upgrade-info">
+                <h3>🎯 현재 수익 상태</h3>
+                <div class="revenue-display">
+                    <div class="revenue-item">
+                        <span>이번 달 어필리에이트 수익:</span>
+                        <strong id="affiliateRevenue">$0</strong>
+                    </div>
+                    <div class="revenue-item">
+                        <span>기타 수익:</span>
+                        <strong id="otherRevenue">$0</strong>
+                    </div>
+                    <div class="revenue-total">
+                        <span>총 수익:</span>
+                        <strong id="totalRevenue">$0</strong>
+                    </div>
+                </div>
+                
+                <div class="upgrade-threshold">
+                    <p><strong>Pro 모드 권장 기준:</strong> 월 $50 이상</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="revenueProgress" style="width: 0%"></div>
+                    </div>
+                    <p id="upgradeMessage">아직 Pro 모드 권장 기준에 도달하지 않았습니다.</p>
+                </div>
+
+                <div class="pro-features">
+                    <h3>💎 Pro 모드 기능</h3>
+                    <ul>
+                        <li>✅ Buffer Analytics API 연동</li>
+                        <li>✅ ManyChat Analytics 연동</li>
+                        <li>✅ AI 기반 맞춤 목표 설정</li>
+                        <li>✅ 실시간 성과 분석</li>
+                        <li>✅ 고급 리포팅</li>
+                    </ul>
+                    <p class="cost-info"><strong>추가 비용:</strong> $30/월 (Buffer Pro + ManyChat Pro)</p>
+                </div>
+
+                <div class="modal-actions">
+                    <button id="forceUpgradeBtn" class="btn-secondary" onclick="AppState.forceUpgrade()">
+                        강제 업그레이드 (테스트용)
+                    </button>
+                    <button id="upgradeBtn" class="btn-primary" onclick="AppState.upgradeMode()" disabled>
+                        Pro 모드 활성화
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 스크립트 로드 -->
+    <script src="js/main.js"></script>
+    <script src="js/product-register.js"></script>
+    <script src="js/engagement-assistant.js"></script>
+    <script src="js/analytics.js"></script>
     
-    // 성취 알림
-    showAchievement: function(message, type = 'success') {
-        const toast = document.createElement('div');
-        
-        let bgColor = '#28a745'; // success
-        if (type === 'error') bgColor = '#dc3545';
-        if (type === 'warning') bgColor = '#ffc107';
-        if (type === 'info') bgColor = '#17a2b8';
-        
-        toast.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: ${bgColor};
-            color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            z-index: 3000;
-            font-weight: bold;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            animation: slideIn 0.3s ease;
-        `;
-        toast.textContent = message;
-        document.body.appendChild(toast);
-        
-        setTimeout(() => {
-            toast.remove();
-        }, 3000);
-    },
-    
-    // 텍스트 복사 함수
-    copyText: function(text) {
-        navigator.clipboard.writeText(text).then(() => {
-            this.showAchievement(`텍스트가 복사되었습니다! 📋`);
-        }).catch(() => {
-            // Fallback for older browsers
-            const textArea = document.createElement('textarea');
-            textArea.value = text;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-            this.showAchievement(`텍스트가 복사되었습니다! 📋`);
-        });
-    },
-    
-    // 파일 크기 포맷
-    formatFileSize: function(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    },
-    
-    // 시간 차이 계산
-    getTimeAgo: function(timestamp) {
-        try {
-            const now = Date.now();
-            const recordTime = new Date(timestamp).getTime();
-            const diff = Math.floor((now - recordTime) / 1000);
+    <script>
+        // 앱 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            AppState.initialize();
+            Navigation.setupNavigation();
+            AppState.updateModeDisplay();
             
-            if (diff < 60) return `${diff}초 전`;
-            if (diff < 3600) return `${Math.floor(diff / 60)}분 전`;
-            if (diff < 86400) return `${Math.floor(diff / 3600)}시간 전`;
-            return `${Math.floor(diff / 86400)}일 전`;
-        } catch (e) {
-            console.log('시간 계산 오류:', e);
-            return 'N/A';
-        }
-    },
-    
-    // 안전한 저장소 접근
-    safeStorage: {
-        get: function(key, defaultValue = null) {
-            try {
-                return localStorage.getItem(key) || defaultValue;
-            } catch (e) {
-                console.log('저장소 읽기 오류:', e);
-                return defaultValue;
-            }
-        },
-        
-        set: function(key, value) {
-            try {
-                localStorage.setItem(key, value);
-                return true;
-            } catch (e) {
-                console.log('저장소 쓰기 오류:', e);
-                return false;
-            }
-        },
-        
-        remove: function(key) {
-            try {
-                localStorage.removeItem(key);
-                return true;
-            } catch (e) {
-                console.log('저장소 삭제 오류:', e);
-                return false;
-            }
-        }
-    }
-};
+            // 기본적으로 제품 등록 페이지 표시
+            Navigation.showPage('product-register');
+        });
+    </script>
+</body>
+</html>
