@@ -448,9 +448,9 @@ window.EngagementAssistant = {
     // 기본 목표 설정 (포스팅 포함)
     getDefaultTargets: function(sns, language) {
         const baseTargets = {
-            instagram: { postings: 2, likes: 5, comments: 2, follows: 1 },
-            x: { postings: 3, likes: 3, comments: 1, follows: 1 },
-            threads: { postings: 2, likes: 4, comments: 1, follows: 1 }
+            instagram: { postings: 2, likes: 40, comments: 20, follows: 20 },
+            x: { postings: 15, likes: 50, comments: 30, follows: 30 },
+            threads: { postings: 2, likes: 40, comments: 20, follows: 20 }
         };
         
         return baseTargets[sns] || { postings: 2, likes: 3, comments: 1, follows: 1 };
