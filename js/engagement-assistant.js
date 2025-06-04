@@ -65,7 +65,7 @@ window.EngagementAssistant = {
                                         <button onclick="EngagementAssistant.updateCurrentGoal('postings', -1)" style="width: 30px; height: 30px; font-size: 14px; border-radius: 50%; background: #667eea; color: white; border: none;">-</button>
                                         <span style="display: flex; align-items: center;">
                                             <span id="current-postings" style="font-size: 1.5em; font-weight: bold;">0</span>
-                                            <span style="color: #666; font-size: 1.2em; margin: 0 4px;"> / </span>
+                                            <span style="color: #666; font-size: 1.2em; margin: 0 -6px;"> / </span>
                                             <span id="current-postings-target" style="font-size: 1.5em;">0</span>
                                         </span>
                                         <button onclick="EngagementAssistant.updateCurrentGoal('postings', 1)" style="width: 30px; height: 30px; font-size: 14px; border-radius: 50%; background: #667eea; color: white; border: none;">+</button>
@@ -78,7 +78,7 @@ window.EngagementAssistant = {
                                         <button onclick="EngagementAssistant.updateCurrentGoal('likes', -1)" style="width: 30px; height: 30px; font-size: 14px; border-radius: 50%; background: #667eea; color: white; border: none;">-</button>
                                         <span style="display: flex; align-items: center;">
                                             <span id="current-likes" style="font-size: 1.5em; font-weight: bold;">0</span>
-                                            <span style="color: #666; font-size: 1.2em; margin: 0 4px;"> / </span>
+                                            <span style="color: #666; font-size: 1.2em; margin: 0 -6px;"> / </span>
                                             <span id="current-likes-target" style="font-size: 1.5em;">0</span>
                                         </span>
                                         <button onclick="EngagementAssistant.updateCurrentGoal('likes', 1)" style="width: 30px; height: 30px; font-size: 14px; border-radius: 50%; background: #667eea; color: white; border: none;">+</button>
@@ -91,7 +91,7 @@ window.EngagementAssistant = {
                                         <button onclick="EngagementAssistant.updateCurrentGoal('comments', -1)" style="width: 30px; height: 30px; font-size: 14px; border-radius: 50%; background: #667eea; color: white; border: none;">-</button>
                                         <span style="display: flex; align-items: center;">
                                             <span id="current-comments" style="font-size: 1.5em; font-weight: bold;">0</span>
-                                            <span style="color: #666; font-size: 1.2em; margin: 0 4px;"> / </span>
+                                            <span style="color: #666; font-size: 1.2em; margin: 0 -6px;"> / </span>
                                             <span id="current-comments-target" style="font-size: 1.5em;">0</span>
                                         </span>
                                         <button onclick="EngagementAssistant.updateCurrentGoal('comments', 1)" style="width: 30px; height: 30px; font-size: 14px; border-radius: 50%; background: #667eea; color: white; border: none;">+</button>
@@ -104,7 +104,7 @@ window.EngagementAssistant = {
                                         <button onclick="EngagementAssistant.updateCurrentGoal('follows', -1)" style="width: 30px; height: 30px; font-size: 14px; border-radius: 50%; background: #667eea; color: white; border: none;">-</button>
                                         <span style="display: flex; align-items: center;">
                                             <span id="current-follows" style="font-size: 1.5em; font-weight: bold;">0</span>
-                                            <span style="color: #666; font-size: 1.2em; margin: 0 4px;"> / </span>
+                                            <span style="color: #666; font-size: 1.2em; margin: 0 -6px;"> / </span>
                                             <span id="current-follows-target" style="font-size: 1.5em;">0</span>
                                         </span>
                                         <button onclick="EngagementAssistant.updateCurrentGoal('follows', 1)" style="width: 30px; height: 30px; font-size: 14px; border-radius: 50%; background: #667eea; color: white; border: none;">+</button>
@@ -113,11 +113,11 @@ window.EngagementAssistant = {
                             </div>
                             
                             <!-- 우측: 캐릭터와 진행률 바 -->
-                            <div style="position: absolute; right: 20px; top: 60%; transform: translateY(-50%); display: flex; align-items: center; gap: 15px;">
-                                <div style="width: 30px; height: 200px; background: #e9ecef; border-radius: 15px; position: relative; border: 2px solid #dee2e6;">
+                            <div style="position: absolute; right: 25px; top: 60%; transform: translateY(-50%); display: flex; align-items: center; gap: 35px;">
+                                <div style="width: 30px; height: 230px; background: #e9ecef; border-radius: 15px; position: relative; border: 2px solid #dee2e6;">
                                     <div id="verticalProgress" style="position: absolute; bottom: 0; width: 100%; background: #28a745; border-radius: 13px; transition: height 0.3s ease; height: 0%;"></div>
                                 </div>
-                                <div id="progressCharacter" style="font-size: 3.5em;">😴</div>
+                                <div id="progressCharacter" style="font-size: 4em;">😴</div>
                             </div>
                         </div>
                         
