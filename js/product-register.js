@@ -16,7 +16,7 @@ window.ProductRegister = {
 
             <!-- 메인 탭 -->
             <div id="main" class="tab-content active">
-                <!-- 1. 웹훅 URL 설정 -->
+                <!-- 웹훅 URL 설정 -->
                 <div class="section">
                     <h2>🔗 웹훅 URL 설정</h2>
                     <div class="form-group">
@@ -37,7 +37,7 @@ window.ProductRegister = {
                     </div>
                 </div>
 
-                <!-- 2. 데이터 입력 -->
+                <!-- 데이터 입력 -->
                 <div class="section">
                     <h2>📝 데이터 입력</h2>
                     
@@ -94,7 +94,7 @@ window.ProductRegister = {
                     </div>
                 </div>
 
-                <!-- 3. 전송 -->
+                <!-- 전송 -->
                 <div class="section">
                     <h2>🚀 전송</h2>
                     <button id="sendButton" onclick="ProductRegister.startTransferProcess()">제품 정보 전송하기</button>
@@ -361,7 +361,6 @@ window.ProductRegister = {
         const affiliateLink = document.getElementById('affiliateLink').value.trim();
         const affiliateNotice = document.getElementById('affiliateNotice').value.trim();
         
-        // 빈 필드도 포함하여 모든 필드를 항상 전송
         let content = '';
         content += `[제품명]${productName}\n`;
         content += `[제품가격]${productPrice}\n`;
@@ -387,13 +386,11 @@ window.ProductRegister = {
             }
         });
 
-        // 파일 업로드 버튼들도 비활성화
         const fileButtons = document.querySelectorAll('.file-upload-area button');
         fileButtons.forEach(button => {
             button.disabled = disabled;
         });
 
-        // 전송 버튼 상태 변경
         const sendButton = document.getElementById('sendButton');
         if (sendButton) {
             sendButton.disabled = disabled;
@@ -493,7 +490,6 @@ window.ProductRegister = {
                     } catch (e) {
                         message += `\n응답 내용: ${text}`;
                         
-                        // JSON 파싱 실패 시에도 success와 Product_ID 체크 시도
                         if (text.includes('success') || text.includes('"status":"success"')) {
                             const productIdMatch = text.match(/"Product_ID":\s*"?([^",}]+)"?/);
                             let extractedProductId = null;
@@ -511,12 +507,10 @@ window.ProductRegister = {
                     }
                 }
                 
-                // 웹훅 1에서 success 응답 받으면 3초 지연 후 웹훅 2 전송
                 if (responseData && responseData.status === 'success' && urlFieldId === 'webhookUrl1') {
                     this.addLogEntry(message, response.ok ? 'success' : 'error');
                     this.addLogEntry('🎉 Make.com 워크플로우 완료! 3초 후 웹훅 2 (Buffer) 전송...', 'success');
                     
-                    // 3초 지연 후 웹훅 2 호출
                     setTimeout(() => {
                         this.addLogEntry('🚀 웹훅 2 (Buffer) 전송 시작...', 'info');
                         
@@ -531,7 +525,6 @@ window.ProductRegister = {
                         }
                     }, 3000);
                     
-                    // 히스토리 저장
                     this.saveToHistory({
                         url: url,
                         webhookType: webhookLabel,
@@ -590,7 +583,7 @@ window.ProductRegister = {
         });
     },
     
-    // 웹훅 2 전송 (Product_ID 기반)
+    // 웹훅 2 전송
     sendWebhookWithProductID: function(urlFieldId, productId) {
         const url = document.getElementById(urlFieldId).value.trim();
         
@@ -608,7 +601,6 @@ window.ProductRegister = {
             return;
         }
 
-        // Product_ID로 메시지 구성
         const simpleMessage = {
             content: `[Product_ID]${productId}`,
             author: {
@@ -702,7 +694,6 @@ window.ProductRegister = {
     
     // 히스토리에 저장
     saveToHistory: function(record) {
-        // JSON 데이터에서 상품명 추출
         if (!record.productName) {
             try {
                 const messageData = JSON.parse(record.data);
@@ -715,11 +706,8 @@ window.ProductRegister = {
         }
         
         this.sendHistory.unshift(record);
-        
-        // 1일 지난 기록 자동 정리
         this.cleanupOldHistory();
         
-        // 최대 50개 기록 유지
         if (this.sendHistory.length > 50) {
             this.sendHistory = this.sendHistory.slice(0, 50);
         }
