@@ -15,6 +15,14 @@ window.AppState = {
     },
     accountList: [],
     accountGoals: {}, // 계정별 개별 목표 (포스팅 포함)
+	
+	// 국가 목록 관리
+	countryList: [
+		{ key: 'korea', name: '한국' },
+		{ key: 'japan', name: '일본' },
+		{ key: 'usa', name: '미국' },
+		{ key: 'canada', name: '캐나다' }
+	],
     
     // 앱 초기화
     initialize: function() {
@@ -27,12 +35,13 @@ window.AppState = {
     saveAppState: function() {
         try {
             localStorage.setItem('appState', JSON.stringify({
-                currentMode: this.currentMode,
-                revenue: this.revenue,
-                totalGoals: this.totalGoals,
-                accountList: this.accountList,
-                accountGoals: this.accountGoals
-            }));
+				currentMode: this.currentMode,
+				revenue: this.revenue,
+				totalGoals: this.totalGoals,
+				accountList: this.accountList,
+				accountGoals: this.accountGoals,
+				countryList: this.countryList
+			}));
         } catch (e) {
             console.log('상태 저장 오류:', e);
         }
@@ -40,48 +49,58 @@ window.AppState = {
 
     // 앱 상태 로드 (포스팅 포함)
     loadAppState: function() {
-    try {
-        const saved = localStorage.getItem('appState');
-        if (saved) {
-            const state = JSON.parse(saved);
-            this.currentMode = state.currentMode || 'free';
-            this.revenue = { ...this.revenue, ...state.revenue };
-            this.totalGoals = { ...this.totalGoals, ...state.totalGoals };
-            this.accountList = state.accountList || [];
-            this.accountGoals = state.accountGoals || {};
-            
-            // 👇 이 부분을 추가
-            // 기존 계정들의 목표값을 새로운 기본값으로 강제 업데이트
-            if (this.accountGoals) {
-                Object.keys(this.accountGoals).forEach(accountKey => {
-                    const [sns] = accountKey.split('-');
-                    const newTargets = {
-                        instagram: { postings: 2, likes: 40, comments: 20, follows: 20 },
-                        x: { postings: 15, likes: 50, comments: 30, follows: 30 },
-                        threads: { postings: 2, likes: 40, comments: 20, follows: 20 }
-                    };
-                    
-                    // 기존 계정의 목표값을 새로운 값으로 덮어쓰기
-                    if (newTargets[sns]) {
-                        this.accountGoals[accountKey].targets = newTargets[sns];
-                    }
-                });
+        try {
+            const saved = localStorage.getItem('appState');
+            if (saved) {
+                const state = JSON.parse(saved);
+                this.currentMode = state.currentMode || 'free';
+                this.revenue = { ...this.revenue, ...state.revenue };
+                this.totalGoals = { ...this.totalGoals, ...state.totalGoals };
+                this.accountList = state.accountList || [];
+                this.accountGoals = state.accountGoals || {};
+				
+				this.countryList = state.countryList || [
+					{ key: 'korea', name: '한국' },
+					{ key: 'japan', name: '일본' },
+					{ key: 'usa', name: '미국' },
+					{ key: 'canada', name: '캐나다' }
+				];
+                
+                // 기존 계정들의 목표값을 새로운 기본값으로 강제 업데이트
+                if (this.accountGoals) {
+                    Object.keys(this.accountGoals).forEach(accountKey => {
+                        const [sns] = accountKey.split('-');
+                        const newTargets = {
+                            instagram: { postings: 2, likes: 40, comments: 20, follows: 20 },
+                            x: { postings: 15, likes: 50, comments: 30, follows: 30 },
+                            threads: { postings: 2, likes: 40, comments: 20, follows: 20 }
+                        };
+                        
+                        // 기존 계정의 목표값을 새로운 값으로 덮어쓰기
+                        if (newTargets[sns]) {
+                            this.accountGoals[accountKey].targets = newTargets[sns];
+                        }
+                    });
+                }
             }
-            // 👆 여기까지 추가
+        } catch (e) {
+            console.log('상태 로드 오류:', e);
         }
-    } catch (e) {
-        console.log('상태 로드 오류:', e);
-    }
-},
+    },
     
     // 이벤트 리스너 설정
     setupEventListeners: function() {
         // 모달 외부 클릭 시 닫기
         window.onclick = function(event) {
-            const modal = document.getElementById('modeModal');
-            if (event.target === modal) {
+            const modeModal = document.getElementById('modeModal');
+            const accountModal = document.getElementById('accountEditorModal');
+            
+            if (event.target === modeModal) {
                 AppState.closeModeModal();
             }
+            if (event.target === accountModal && typeof EngagementAssistant !== 'undefined') {
+				EngagementAssistant.closeAccountEditor();
+}
         };
     },
     
