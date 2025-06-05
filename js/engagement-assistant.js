@@ -206,7 +206,7 @@ window.EngagementAssistant = {
 		this.restoreGoalsState();
 		this.initializeAccountList();
 		this.loadSavedTranslationWebhook();
-		this.updateCountrySelects(); // 추가
+		this.updateCountrySelects();
 	},
 
     restoreGoalsState: function() {
@@ -527,105 +527,156 @@ window.EngagementAssistant = {
         }
     },
 	
-	// 번역 기능
-    translateText: function() {
-        const webhookUrl = document.getElementById('translationWebhook').value.trim();
-        const originalText = document.getElementById('originalText').value.trim();
-        const resultTextarea = document.getElementById('translationResult');
-        
-        if (!webhookUrl) {
-            Utils.showAchievement('웹훅 URL을 입력해주세요.', 'error');
-            return;
-        }
-        
-        if (!originalText) {
-            Utils.showAchievement('번역할 텍스트를 입력해주세요.', 'error');
-            return;
-        }
-        
-        // 번역 대상 언어 목록 생성 (한국 제외)
-        const languageNames = {
-            japan: '일본어',
-            usa: '영어 (미국)',
-            canada: '영어 (캐나다)'
-        };
-        
-        const targetLanguages = Object.keys(languageNames);
-        
-        resultTextarea
+	// 번역 기능 - 응답 처리 부분만 수정
+	translateText: function() {
+		const webhookUrl = document.getElementById('translationWebhook').value.trim();
+		const originalText = document.getElementById('originalText').value.trim();
+		const resultTextarea = document.getElementById('translationResult');
 		
+		if (!webhookUrl) {
+			Utils.showAchievement('웹훅 URL을 입력해주세요.', 'error');
+			return;
+		}
+		
+		if (!originalText) {
+			Utils.showAchievement('번역할 텍스트를 입력해주세요.', 'error');
+			return;
+		}
+		
+		// 활성 계정에서 고유한 국가 목록 추출
+		const activeCountries = [...new Set(
+			AppState.accountList.map(accountKey => {
+				const [sns, countryKey] = accountKey.split('-');
+				const country = AppState.countryList.find(c => c.key === countryKey);
+				return country ? country.name : countryKey;
+			})
+		)];
+		
+		// 로딩 상태 표시
 		resultTextarea.value = '번역 중...';
-       
-       // 웹훅으로 번역 요청
-       const requestData = {
-           original_text: originalText,
-           target_languages: targetLanguages,
-           timestamp: new Date().toISOString()
-       };
-       
-       fetch(webhookUrl, {
-           method: 'POST',
-           headers: {
-               'Content-Type': 'application/json'
-           },
-           body: JSON.stringify(requestData)
-       })
-       .then(response => response.json())
-       .then(data => {
-           if (data.success) {
-               let resultText = `원문 (한국어): ${originalText}\n\n`;
-               
-               targetLanguages.forEach(lang => {
-                   if (data.translations && data.translations[lang]) {
-                       resultText += `${languageNames[lang]}: ${data.translations[lang]}\n\n`;
-                   }
-               });
-               
-               resultTextarea.value = resultText.trim();
-               Utils.showAchievement('번역이 완료되었습니다! 🌐');
-           } else {
-               resultTextarea.value = '번역 중 오류가 발생했습니다.';
-               Utils.showAchievement('번역 실패: ' + (data.error || '알 수 없는 오류'), 'error');
-           }
-       })
-       .catch(error => {
-           console.error('번역 오류:', error);
-           resultTextarea.value = '네트워크 오류가 발생했습니다.';
-           Utils.showAchievement('번역 요청 실패: ' + error.message, 'error');
-       });
-   },
+		
+		// Discord 메시지 형식으로 웹훅 데이터 구성
+		const webhookData = {
+			content: `${originalText}\n\n[활성 국가] ${activeCountries.join(', ')}`,
+			author: {
+				id: "123456789",
+				username: "translator",
+				discriminator: "0001"
+			},
+			timestamp: new Date().toISOString(),
+			attachments: []
+		};
+		
+		const startTime = Date.now();
+		
+		// 웹훅 전송
+		fetch(webhookUrl, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(webhookData)
+		})
+		.then(response => {
+			const endTime = Date.now();
+			const duration = endTime - startTime;
+			
+			return response.text().then(text => {
+				console.log('받은 응답:', text);
+				
+				if (response.ok) {
+					try {
+						// 직접 JSON 파싱 시도
+						const translationResults = JSON.parse(text);
+						
+						// JSON 객체인지 확인하고 번역 결과 포맷팅
+						if (typeof translationResults === 'object' && translationResults !== null) {
+							let resultText = '';
+							Object.keys(translationResults).forEach(country => {
+								resultText += `${country}: ${translationResults[country]}\n`;
+							});
+							
+							resultTextarea.value = resultText.trim();
+							Utils.showAchievement(`번역이 완료되었습니다! (${duration}ms) 🌐`);
+						} else {
+							// JSON이 아닌 경우 원시 데이터 표시
+							resultTextarea.value = `번역 결과:\n${text}`;
+							Utils.showAchievement(`번역 완료 (${duration}ms) 🌐`);
+						}
+						
+					} catch (parseError) {
+						console.log('JSON 파싱 실패:', parseError);
+						
+						// JSON 파싱 실패 시 텍스트에서 JSON 추출 시도
+						const jsonMatch = text.match(/\{[\s\S]*\}/);
+						if (jsonMatch) {
+							try {
+								const extractedJson = JSON.parse(jsonMatch[0]);
+								let resultText = '';
+								Object.keys(extractedJson).forEach(country => {
+									resultText += `${country}: ${extractedJson[country]}\n`;
+								});
+								
+								resultTextarea.value = resultText.trim();
+								Utils.showAchievement(`번역이 완료되었습니다! (${duration}ms) 🌐`);
+							} catch (extractError) {
+								// 모든 파싱 실패 시 원시 데이터 표시
+								resultTextarea.value = `원문: ${originalText}\n\n응답:\n${text}`;
+								Utils.showAchievement(`번역 완료 (원시 데이터) (${duration}ms) 🌐`);
+							}
+						} else {
+							// JSON을 찾을 수 없는 경우
+							resultTextarea.value = `원문: ${originalText}\n\n응답:\n${text}`;
+							Utils.showAchievement(`번역 완료 (원시 데이터) (${duration}ms) 🌐`);
+						}
+					}
+				} else {
+					resultTextarea.value = `번역 요청 실패\n상태: ${response.status} ${response.statusText}\n응답: ${text}`;
+					Utils.showAchievement(`번역 요청 실패: ${response.status} ${response.statusText}`, 'error');
+				}
+			});
+		})
+		.catch(error => {
+			const endTime = Date.now();
+			const duration = endTime - startTime;
+			
+			console.error('번역 웹훅 전송 오류:', error);
+			resultTextarea.value = `네트워크 오류 발생\n오류: ${error.message}\n응답 시간: ${duration}ms`;
+			Utils.showAchievement('번역 요청 실패: ' + error.message, 'error');
+		});
+	},
 
-   updateProgressCharacter: function(percentage) {
-       const characterElement = document.getElementById('progressCharacter');
-       const verticalProgress = document.getElementById('verticalProgress');
-       
-       if (!characterElement || !verticalProgress) return;
-       
-       verticalProgress.style.height = `${percentage}%`;
-       
-       let character = '😴';
-       
-       if (percentage >= 100) {
-           character = '🎉';
-           verticalProgress.style.background = '#28a745';
-       } else if (percentage >= 75) {
-           character = '🤩';
-           verticalProgress.style.background = 'linear-gradient(0deg, #28a745, #20c997)';
-       } else if (percentage >= 50) {
-           character = '😊';
-           verticalProgress.style.background = 'linear-gradient(0deg, #ffc107, #fd7e14)';
-       } else if (percentage >= 25) {
-           character = '🙂';
-           verticalProgress.style.background = 'linear-gradient(0deg, #667eea, #764ba2)';
-       } else if (percentage > 0) {
-           character = '😐';
-           verticalProgress.style.background = 'linear-gradient(0deg, #6c757d, #495057)';
-       }
-       
-       characterElement.textContent = character;
-   },
-   
-   // 계정 편집 모달 열기
+    updateProgressCharacter: function(percentage) {
+        const characterElement = document.getElementById('progressCharacter');
+        const verticalProgress = document.getElementById('verticalProgress');
+        
+        if (!characterElement || !verticalProgress) return;
+        
+        verticalProgress.style.height = `${percentage}%`;
+        
+        let character = '😴';
+        
+        if (percentage >= 100) {
+            character = '🎉';
+            verticalProgress.style.background = '#28a745';
+        } else if (percentage >= 75) {
+            character = '🤩';
+            verticalProgress.style.background = 'linear-gradient(0deg, #28a745, #20c997)';
+        } else if (percentage >= 50) {
+            character = '😊';
+            verticalProgress.style.background = 'linear-gradient(0deg, #ffc107, #fd7e14)';
+        } else if (percentage >= 25) {
+            character = '🙂';
+            verticalProgress.style.background = 'linear-gradient(0deg, #667eea, #764ba2)';
+        } else if (percentage > 0) {
+            character = '😐';
+            verticalProgress.style.background = 'linear-gradient(0deg, #6c757d, #495057)';
+        }
+        
+        characterElement.textContent = character;
+    },
+    
+    // 계정 편집 모달 열기
 	openAccountEditor: function() {
 		const modal = document.getElementById('accountEditorModal');
 		this.updateCountryList();
@@ -786,5 +837,5 @@ window.EngagementAssistant = {
 				languageSelect.appendChild(option);
 			});
 		}
-	},
+	}
 };
