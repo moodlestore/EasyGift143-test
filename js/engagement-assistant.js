@@ -102,7 +102,10 @@ window.EngagementAssistant = {
                         </div>
                         
                         <div style="flex: 4; background: white; padding: 20px; border-radius: 8px; border: 2px solid #28a745; display: flex; flex-direction: column; min-height: 60px;">
-                            <h3 style="margin: 0 0 10px 0; text-align: center; font-size: 1.3em;">계정 관리</h3>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+								<h3 style="margin: 0; font-size: 1.3em;">계정 관리</h3>
+								<button onclick="EngagementAssistant.openAccountEditor()" style="width: 30px; height: 30px; padding: 0; font-size: 20px; background: white; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center;" title="계정 편집">⚙️</button>
+							</div>
                             
                             <div class="form-group" style="margin-bottom: 8px;">
                                 <label for="snsSelect" style="font-size: 14px; margin-bottom: 5px;">SNS 플랫폼</label>
@@ -129,9 +132,9 @@ window.EngagementAssistant = {
                             </div>
                             
                             <div style="margin-bottom: 10px;">
-                                <label style="font-size: 14px; margin-bottom: 5px;">활성 계정 목록</label>
-                            </div>
-                            <select id="accountList" size="5" style="width: 100%; font-size: 14px; padding: 5px; flex: 1;" onchange="EngagementAssistant.selectAccount()">
+								<label style="font-size: 14px; margin-bottom: 5px;">활성 계정 목록</label>
+							</div>
+                            <select id="accountList" size="5" style="width: 100%; font-size: 14px; padding: 5px; flex: 1; font-family: 'Courier New', Consolas, monospace;" onchange="EngagementAssistant.selectAccount()">
                             </select>
                         </div>
                     </div>
@@ -165,15 +168,46 @@ window.EngagementAssistant = {
                     <textarea id="translationResult" rows="6" readonly placeholder=""></textarea>
                 </div>
             </div>
+			
+			<!-- 계정 편집 모달 -->
+			<div id="accountEditorModal" class="modal" style="display: none;">
+				<div class="modal-content" style="max-width: 450px;">
+					<span class="close" onclick="EngagementAssistant.closeAccountEditor()">&times;</span>
+					<h2>⚙️ 국가 관리</h2>
+					
+					<div style="margin-bottom: 20px;">
+						<h3>새 국가 추가</h3>
+						<div style="display: flex; gap: 10px; align-items: end;">
+							<div style="flex: 1;">
+								<label for="newCountryInput" style="font-size: 14px;">국가명</label>
+								<input type="text" id="newCountryInput" placeholder="예: 독일, 영국, 프랑스" style="width: 100%; padding: 8px;">
+							</div>
+							<button onclick="EngagementAssistant.addCountry()" style="background: #28a745; white-space: nowrap;">➕ 추가</button>
+						</div>
+					</div>
+					
+					<div style="margin-bottom: 20px;">
+						<h3>기존 국가 관리</h3>
+						<div id="countryList" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px; padding: 10px;">
+							<!-- 국가 목록이 동적으로 여기에 추가됩니다 -->
+						</div>
+					</div>
+					
+					<div style="display: flex; gap: 10px; justify-content: flex-end;">
+						<button onclick="EngagementAssistant.closeAccountEditor()" class="btn-secondary">완료</button>
+					</div>
+				</div>
+			</div>
         `;
     },
 
     initialize: function() {
-        this.checkMidnightReset();
-        this.restoreGoalsState();
-        this.initializeAccountList();
-        this.loadSavedTranslationWebhook();
-    },
+		this.checkMidnightReset();
+		this.restoreGoalsState();
+		this.initializeAccountList();
+		this.loadSavedTranslationWebhook();
+		this.updateCountrySelects(); // 추가
+	},
 
     restoreGoalsState: function() {
         setTimeout(() => {
@@ -299,24 +333,24 @@ window.EngagementAssistant = {
         });
     },
 
-    getAccountDisplayName: function(sns, language) {
-        const snsNames = {
-            instagram: 'Instagram',
-            x: 'X',
-            threads: 'Threads'
-        };
-        
-        const languageNames = {
-            korea: '한국',
-            japan: '일본',
-            usa: '미국',
-            canada: '캐나다'
-        };
-        
-        const snsFormatted = snsNames[sns].padEnd(10, ' ');
-        
-        return `${snsFormatted} / ${languageNames[language]}`;
-    },
+	getAccountDisplayName: function(sns, language) {
+		// SNS명을 정확히 12자리로 맞춤
+		const snsDisplayMap = {
+			instagram: 'Instagram   ',  // 12자리
+			x: 'X           ',          // 12자리
+			threads: 'Threads     '     // 12자리
+		};
+		
+		const country = AppState.countryList.find(c => c.key === language);
+		const countryName = country ? country.name : language;
+		
+		const snsDisplay = snsDisplayMap[sns] || sns.padEnd(12, ' ');
+		
+		// 국가명도 고정 길이로 맞춤 (6자리로 통일)
+		const countryDisplay = countryName.padEnd(6, ' ');
+		
+		return `${snsDisplay}/ ${countryDisplay}`;
+	},
 
     selectAccount: function() {
         const accountList = document.getElementById('accountList');
@@ -522,74 +556,239 @@ window.EngagementAssistant = {
         
         const targetLanguages = Object.keys(languageNames);
         
-        resultTextarea.value = '번역 중...';
-        
-        // 웹훅으로 번역 요청
-        const requestData = {
-            original_text: originalText,
-            target_languages: targetLanguages,
-            timestamp: new Date().toISOString()
-        };
-        
-        fetch(webhookUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestData)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                let resultText = `원문 (한국어): ${originalText}\n\n`;
-                
-                targetLanguages.forEach(lang => {
-                    if (data.translations && data.translations[lang]) {
-                        resultText += `${languageNames[lang]}: ${data.translations[lang]}\n\n`;
-                    }
-                });
-                
-                resultTextarea.value = resultText.trim();
-                Utils.showAchievement('번역이 완료되었습니다! 🌐');
-            } else {
-                resultTextarea.value = '번역 중 오류가 발생했습니다.';
-                Utils.showAchievement('번역 실패: ' + (data.error || '알 수 없는 오류'), 'error');
-            }
-        })
-        .catch(error => {
-            console.error('번역 오류:', error);
-            resultTextarea.value = '네트워크 오류가 발생했습니다.';
-            Utils.showAchievement('번역 요청 실패: ' + error.message, 'error');
-        });
-    },
+        resultTextarea
+		
+		resultTextarea.value = '번역 중...';
+       
+       // 웹훅으로 번역 요청
+       const requestData = {
+           original_text: originalText,
+           target_languages: targetLanguages,
+           timestamp: new Date().toISOString()
+       };
+       
+       fetch(webhookUrl, {
+           method: 'POST',
+           headers: {
+               'Content-Type': 'application/json'
+           },
+           body: JSON.stringify(requestData)
+       })
+       .then(response => response.json())
+       .then(data => {
+           if (data.success) {
+               let resultText = `원문 (한국어): ${originalText}\n\n`;
+               
+               targetLanguages.forEach(lang => {
+                   if (data.translations && data.translations[lang]) {
+                       resultText += `${languageNames[lang]}: ${data.translations[lang]}\n\n`;
+                   }
+               });
+               
+               resultTextarea.value = resultText.trim();
+               Utils.showAchievement('번역이 완료되었습니다! 🌐');
+           } else {
+               resultTextarea.value = '번역 중 오류가 발생했습니다.';
+               Utils.showAchievement('번역 실패: ' + (data.error || '알 수 없는 오류'), 'error');
+           }
+       })
+       .catch(error => {
+           console.error('번역 오류:', error);
+           resultTextarea.value = '네트워크 오류가 발생했습니다.';
+           Utils.showAchievement('번역 요청 실패: ' + error.message, 'error');
+       });
+   },
 
-    updateProgressCharacter: function(percentage) {
-        const characterElement = document.getElementById('progressCharacter');
-        const verticalProgress = document.getElementById('verticalProgress');
-        
-        if (!characterElement || !verticalProgress) return;
-        
-        verticalProgress.style.height = `${percentage}%`;
-        
-        let character = '😴';
-        
-        if (percentage >= 100) {
-            character = '🎉';
-            verticalProgress.style.background = '#28a745';
-        } else if (percentage >= 75) {
-            character = '🤩';
-            verticalProgress.style.background = 'linear-gradient(0deg, #28a745, #20c997)';
-        } else if (percentage >= 50) {
-            character = '😊';
-            verticalProgress.style.background = 'linear-gradient(0deg, #ffc107, #fd7e14)';
-        } else if (percentage >= 25) {
-            character = '🙂';
-            verticalProgress.style.background = 'linear-gradient(0deg, #667eea, #764ba2)';
-        } else if (percentage > 0) {
-            character = '😐';
-            verticalProgress.style.background = 'linear-gradient(0deg, #6c757d, #495057)';
-        }
-        
-        characterElement.textContent = character;
-    }
+   updateProgressCharacter: function(percentage) {
+       const characterElement = document.getElementById('progressCharacter');
+       const verticalProgress = document.getElementById('verticalProgress');
+       
+       if (!characterElement || !verticalProgress) return;
+       
+       verticalProgress.style.height = `${percentage}%`;
+       
+       let character = '😴';
+       
+       if (percentage >= 100) {
+           character = '🎉';
+           verticalProgress.style.background = '#28a745';
+       } else if (percentage >= 75) {
+           character = '🤩';
+           verticalProgress.style.background = 'linear-gradient(0deg, #28a745, #20c997)';
+       } else if (percentage >= 50) {
+           character = '😊';
+           verticalProgress.style.background = 'linear-gradient(0deg, #ffc107, #fd7e14)';
+       } else if (percentage >= 25) {
+           character = '🙂';
+           verticalProgress.style.background = 'linear-gradient(0deg, #667eea, #764ba2)';
+       } else if (percentage > 0) {
+           character = '😐';
+           verticalProgress.style.background = 'linear-gradient(0deg, #6c757d, #495057)';
+       }
+       
+       characterElement.textContent = character;
+   },
+   
+   // 계정 편집 모달 열기
+	openAccountEditor: function() {
+		const modal = document.getElementById('accountEditorModal');
+		this.updateCountryList();
+		modal.style.display = 'block';
+	},
+
+	// 계정 편집 모달 닫기
+	closeAccountEditor: function() {
+		document.getElementById('accountEditorModal').style.display = 'none';
+	},
+	
+	// 국가 추가
+	addCountry: function() {
+		const countryName = document.getElementById('newCountryInput').value.trim();
+		
+		if (!countryName) {
+			Utils.showAchievement('국가명을 입력해주세요.', 'error');
+			return;
+		}
+		
+		// 중복 체크
+		const exists = AppState.countryList.some(country => 
+			country.name.toLowerCase() === countryName.toLowerCase()
+		);
+		
+		if (exists) {
+			Utils.showAchievement('이미 존재하는 국가입니다.', 'error');
+			return;
+		}
+		
+		// 새 국가 추가
+		const countryKey = countryName.toLowerCase().replace(/\s+/g, '');
+		AppState.countryList.push({
+			key: countryKey,
+			name: countryName
+		});
+		
+		AppState.saveAppState();
+		
+		// UI 업데이트
+		this.updateCountrySelects();
+		this.updateCountryList();
+		
+		// 입력창 초기화
+		document.getElementById('newCountryInput').value = '';
+		
+		Utils.showAchievement(`"${countryName}" 국가가 추가되었습니다! ➕`);
+	},
+
+	// 국가 삭제
+	removeCountry: function(countryKey) {
+		const country = AppState.countryList.find(c => c.key === countryKey);
+		if (!country) return;
+		
+		// 해당 국가를 사용하는 계정들 찾기
+		const affectedAccounts = AppState.accountList.filter(account => 
+			account.endsWith(`-${countryKey}`)
+		);
+		
+		let confirmMessage = `"${country.name}" 국가를 삭제하시겠습니까?`;
+		if (affectedAccounts.length > 0) {
+			confirmMessage += `\n\n관련된 ${affectedAccounts.length}개 계정도 함께 삭제됩니다:`;
+			affectedAccounts.forEach(account => {
+				const [sns] = account.split('-');
+				confirmMessage += `\n- ${this.getAccountDisplayName(sns, countryKey)}`;
+			});
+		}
+		
+		if (!confirm(confirmMessage)) return;
+		
+		// 관련 계정들 삭제
+		affectedAccounts.forEach(account => {
+			const index = AppState.accountList.indexOf(account);
+			if (index > -1) {
+				AppState.accountList.splice(index, 1);
+			}
+			
+			// 목표 데이터도 삭제
+			if (AppState.accountGoals[account]) {
+				delete AppState.accountGoals[account];
+			}
+			
+			// 현재 선택된 계정이 삭제되는 경우
+			if (this.currentSelectedAccount === account) {
+				this.currentSelectedAccount = null;
+				Utils.safeStorage.remove('lastSelectedAccount');
+			}
+		});
+		
+		// 국가 목록에서 제거
+		const countryIndex = AppState.countryList.findIndex(c => c.key === countryKey);
+		if (countryIndex > -1) {
+			AppState.countryList.splice(countryIndex, 1);
+		}
+		
+		AppState.saveAppState();
+		
+		// UI 업데이트
+		this.updateAccountListDisplay();
+		this.updateCurrentAccountDisplay();
+		this.updateCountrySelects();
+		this.updateCountryList();
+		
+		// 새로운 계정 자동 선택
+		setTimeout(() => {
+			const accountList = document.getElementById('accountList');
+			if (accountList && accountList.options.length > 0) {
+				accountList.selectedIndex = 0;
+				this.currentSelectedAccount = accountList.options[0].value;
+				this.updateCurrentAccountDisplay();
+				Utils.safeStorage.set('lastSelectedAccount', this.currentSelectedAccount);
+			}
+		}, 100);
+		
+		Utils.showAchievement(`"${country.name}" 국가가 삭제되었습니다! ➖`);
+	},
+
+	// 국가 목록 UI 업데이트
+	updateCountryList: function() {
+		const container = document.getElementById('countryList');
+		if (!container) return;
+		
+		if (AppState.countryList.length === 0) {
+			container.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">등록된 국가가 없습니다.</p>';
+			return;
+		}
+		
+		let html = '';
+		AppState.countryList.forEach(country => {
+			// 해당 국가를 사용하는 계정 수 계산
+			const accountCount = AppState.accountList.filter(account => 
+				account.endsWith(`-${country.key}`)
+			).length;
+			
+			html += `
+				<div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; margin-bottom: 5px; background: #f8f9fa; border-radius: 5px; border: 1px solid #ddd;">
+					<div>
+						<strong>${country.name}</strong>
+						<span style="color: #666; font-size: 12px; margin-left: 10px;">(${accountCount}개 계정)</span>
+					</div>
+					<button onclick="EngagementAssistant.removeCountry('${country.key}')" style="background: #dc3545; color: white; border: none; border-radius: 4px; padding: 4px 8px; font-size: 12px;">삭제</button>
+				</div>
+			`;
+		});
+		
+		container.innerHTML = html;
+	},
+
+	// 국가 선택 드롭다운 업데이트
+	updateCountrySelects: function() {
+		const languageSelect = document.getElementById('languageSelect');
+		if (languageSelect) {
+			languageSelect.innerHTML = '';
+			AppState.countryList.forEach(country => {
+				const option = document.createElement('option');
+				option.value = country.key;
+				option.textContent = country.name;
+				languageSelect.appendChild(option);
+			});
+		}
+	},
 };
