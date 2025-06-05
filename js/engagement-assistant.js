@@ -334,22 +334,18 @@ window.EngagementAssistant = {
     },
 
 	getAccountDisplayName: function(sns, language) {
-		// SNS명을 정확히 12자리로 맞춤
-		const snsDisplayMap = {
-			instagram: 'Instagram   ',  // 12자리
-			x: 'X           ',          // 12자리
-			threads: 'Threads     '     // 12자리
+		// 정확히 12글자로 맞춤 (오른쪽에 공백 채움)
+		const snsNames = {
+			instagram: 'Instagram   ',  	// 9 + 3 = 12글자
+			x: 'X           ',          	// 1 + 11 = 12글자  
+			threads: 'Threads     '     	// 7 + 5 = 12글자
 		};
 		
+		// AppState.countryList에서 동적으로 국가명 찾기
 		const country = AppState.countryList.find(c => c.key === language);
 		const countryName = country ? country.name : language;
 		
-		const snsDisplay = snsDisplayMap[sns] || sns.padEnd(12, ' ');
-		
-		// 국가명도 고정 길이로 맞춤 (6자리로 통일)
-		const countryDisplay = countryName.padEnd(6, ' ');
-		
-		return `${snsDisplay}/ ${countryDisplay}`;
+		return `${snsNames[sns]}/ ${countryName}`;
 	},
 
     selectAccount: function() {
