@@ -146,7 +146,7 @@ window.EngagementAssistant = {
                 <h2>🌐 번역 도우미</h2>
                 
                 <div class="form-group">
-                    <label for="translationWebhook">웹훅 URL:</label>
+                    <label for="translationWebhook">웹훅 URL</label>
                     <div class="url-input-group">
                         <input type="text" id="translationWebhook" placeholder="번역 웹훅 URL을 입력하세요">
                         <button onclick="EngagementAssistant.saveTranslationWebhook()">저장</button>
@@ -155,7 +155,7 @@ window.EngagementAssistant = {
                 </div>
                 
                 <div class="form-group">
-                    <label for="originalText">원문 (한국어):</label>
+                    <label for="originalText">원문 (한국어)</label>
                     <textarea id="originalText" rows="3" placeholder="번역할 한국어 텍스트를 입력하세요..."></textarea>
                 </div>
                 
@@ -164,7 +164,7 @@ window.EngagementAssistant = {
                 </div>
                 
                 <div class="form-group">
-                    <label for="translationResult">번역 결과:</label>
+                    <label for="translationResult">번역 결과</label>
                     <textarea id="translationResult" rows="6" readonly placeholder=""></textarea>
                 </div>
             </div>
