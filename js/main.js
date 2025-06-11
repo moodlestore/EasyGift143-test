@@ -94,13 +94,17 @@ window.AppState = {
         window.onclick = function(event) {
             const modeModal = document.getElementById('modeModal');
             const accountModal = document.getElementById('accountEditorModal');
+            const webhookModal = document.getElementById('webhookModal');
             
             if (event.target === modeModal) {
                 AppState.closeModeModal();
             }
             if (event.target === accountModal && typeof EngagementAssistant !== 'undefined') {
 				EngagementAssistant.closeAccountEditor();
-}
+            }
+            if (event.target === webhookModal && typeof ContentGenerator !== 'undefined') {
+                ContentGenerator.closeWebhookModal();
+            }
         };
     },
     
@@ -210,7 +214,7 @@ window.AppState = {
     }
 };
 
-// 네비게이션 관리
+// Navigation.showPage 함수만 수정된 버전
 window.Navigation = {
     // 네비게이션 설정
     setupNavigation: function() {
@@ -234,8 +238,10 @@ window.Navigation = {
         });
     },
     
-    // 페이지 표시
+    // 페이지 표시 (디버깅 강화)
     showPage: function(pageName) {
+        console.log('showPage 호출됨:', pageName); // 디버깅
+        
         AppState.currentPage = pageName;
         Utils.updateLastSync();
         
@@ -245,21 +251,63 @@ window.Navigation = {
         this.showLoading(true);
         
         setTimeout(() => {
-            switch(pageName) {
-                case 'product-register':
-                    content.innerHTML = ProductRegister.getHTML();
-                    ProductRegister.initialize();
-                    break;
-                case 'engagement-assistant':
-                    content.innerHTML = EngagementAssistant.getHTML();
-                    EngagementAssistant.initialize();
-                    break;
-                case 'analytics-dashboard':
-                    content.innerHTML = Analytics.getHTML();
-                    Analytics.initialize();
-                    break;
-                default:
-                    content.innerHTML = '<h2>페이지를 찾을 수 없습니다</h2>';
+            try {
+                console.log('페이지 로딩 시작:', pageName); // 디버깅
+                
+                switch(pageName) {
+                    case 'product-register':
+                        console.log('ProductRegister 확인:', typeof ProductRegister); // 디버깅
+                        content.innerHTML = ProductRegister.getHTML();
+                        ProductRegister.initialize();
+                        break;
+                        
+                    case 'content-generator':
+                        console.log('ContentGenerator 확인:', typeof ContentGenerator); // 디버깅
+                        
+                        if (typeof ContentGenerator === 'undefined') {
+                            console.error('ContentGenerator가 정의되지 않음!');
+                            content.innerHTML = `
+                                <div class="section">
+                                    <h2>⚠️ 컨텐츠 생성 모듈 로드 오류</h2>
+                                    <p>content-generator.js 파일이 로드되지 않았습니다.</p>
+                                    <p>페이지를 새로고침하거나 파일 경로를 확인해주세요.</p>
+                                    <button onclick="location.reload()">페이지 새로고침</button>
+                                </div>
+                            `;
+                        } else {
+                            content.innerHTML = ContentGenerator.getHTML();
+                            ContentGenerator.initialize();
+                        }
+                        break;
+                        
+                    case 'engagement-assistant':
+                        console.log('EngagementAssistant 확인:', typeof EngagementAssistant); // 디버깅
+                        content.innerHTML = EngagementAssistant.getHTML();
+                        EngagementAssistant.initialize();
+                        break;
+                        
+                    case 'analytics-dashboard':
+                        console.log('Analytics 확인:', typeof Analytics); // 디버깅
+                        content.innerHTML = Analytics.getHTML();
+                        Analytics.initialize();
+                        break;
+                        
+                    default:
+                        content.innerHTML = '<h2>페이지를 찾을 수 없습니다</h2>';
+                }
+                
+                console.log('페이지 로딩 완료:', pageName); // 디버깅
+                
+            } catch (error) {
+                console.error('페이지 로딩 중 오류:', error);
+                content.innerHTML = `
+                    <div class="section">
+                        <h2>❌ 페이지 로딩 오류</h2>
+                        <p>오류: ${error.message}</p>
+                        <pre>${error.stack}</pre>
+                        <button onclick="location.reload()">페이지 새로고침</button>
+                    </div>
+                `;
             }
             
             this.showLoading(false);
