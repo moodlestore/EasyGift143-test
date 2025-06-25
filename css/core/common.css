@@ -348,3 +348,64 @@ input:focus, textarea:focus, select:focus {
         margin: 0 0 var(--spacing-sm) 0;
     }
 }
+
+/* 공통 폼 스타일 */
+.form-group {
+    margin-bottom: var(--spacing-md);
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+input, textarea, select {
+    width: 100%;
+    padding: 12px;
+    border: var(--border-medium);
+    border-radius: var(--border-radius-md);
+    font-size: 14px;
+    transition: var(--transition-normal);
+    box-sizing: border-box;
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* 포스팅 전용 폼 스타일 */
+.posting-form .form-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.posting-form textarea {
+    resize: vertical;
+    font-family: inherit;
+    min-height: 100px;
+}
+
+.posting-form input[type="text"] {
+    font-size: 14px;
+}
+
+.posting-form label {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: var(--spacing-sm);
+}
+
+/* 버튼 로딩 스피너 */
+.button-loading {
+    width: 14px;
+    height: 14px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 8px;
+    display: inline-block;
+}
