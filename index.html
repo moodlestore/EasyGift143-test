@@ -4,8 +4,16 @@
     <title>EasyGift143 통합 대시보드</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/components.css">
+    
+    <!-- 모듈화된 CSS 파일들 -->
+    <link rel="stylesheet" href="css/core/base.css">
+    <link rel="stylesheet" href="css/core/layout.css">
+    <link rel="stylesheet" href="css/core/common.css">
+    <link rel="stylesheet" href="css/modules/product-posting.css">
+    <link rel="stylesheet" href="css/modules/product-cardnews.css">
+    <link rel="stylesheet" href="css/modules/product-shortform.css">
+    <link rel="stylesheet" href="css/modules/product-giftstory.css">
+    <link rel="stylesheet" href="css/modules/analytics.css">
 </head>
 <body>
     <div class="dashboard-container">
@@ -20,13 +28,10 @@
             </div>
         </header>
 
-        <!-- 네비게이션 탭 -->
+        <!-- 네비게이션 탭 (3개로 단순화) -->
         <nav class="main-nav">
             <button class="nav-tab active" data-page="product-register">
-                📝 제품 등록
-            </button>
-            <button class="nav-tab" data-page="content-generator">
-                🎬 컨텐츠 생성
+                📝 등록
             </button>
             <button class="nav-tab" data-page="engagement-assistant">
                 💬 SNS 성장 도우미
@@ -52,7 +57,7 @@
         <!-- 푸터 -->
         <footer class="dashboard-footer">
             <div class="version-info">
-                <strong>v2.1.0</strong> by IdeaForest24
+                <strong>v3.1.2-test</strong> by IdeaForest24
             </div>
             <div class="status-info">
                 <span id="connectionStatus">🟢 연결됨</span>
@@ -115,16 +120,30 @@
         </div>
     </div>
 
-    <!-- 스크립트 로드 -->
+    <!-- 스크립트 로드 (카드뉴스 모듈 추가) -->
     <script src="js/main.js"></script>
-    <script src="js/product-register.js"></script>
-    <script src="js/content-generator.js"></script>
-    <script src="js/engagement-assistant.js"></script>
-    <script src="js/analytics.js"></script>
+    <script src="js/product-register.js"></script>         <!-- 메인 컨트롤러 -->
+    <script src="js/product-posting.js"></script>          <!-- 포스팅 기능 (기존 메인) -->
+    <script src="js/product-cardnews.js"></script>         <!-- 카드뉴스 기능 (신규) -->
+    <script src="js/product-shortform.js"></script>        <!-- 숏폼 콘텐츠 -->
+    <script src="js/product-giftstory.js"></script>        <!-- 감동 선물 사연 -->
+    <script src="js/engagement-assistant.js"></script>     <!-- SNS 성장 도우미 -->
+    <script src="js/analytics.js"></script>                <!-- 분석 대시보드 -->
     
     <script>
         // 앱 초기화
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM 로드 완료, 앱 초기화 시작');
+            
+            // 모듈 로드 확인
+            console.log('ProductRegister 로드됨:', typeof ProductRegister !== 'undefined');
+            console.log('ProductPosting 로드됨:', typeof ProductPosting !== 'undefined');
+            console.log('ProductCardNews 로드됨:', typeof ProductCardNews !== 'undefined');
+            console.log('ProductShortForm 로드됨:', typeof ProductShortForm !== 'undefined');
+            console.log('ProductGiftStory 로드됨:', typeof ProductGiftStory !== 'undefined');
+            console.log('EngagementAssistant 로드됨:', typeof EngagementAssistant !== 'undefined');
+            console.log('Analytics 로드됨:', typeof Analytics !== 'undefined');
+            
             AppState.initialize();
             Navigation.setupNavigation();
             AppState.updateModeDisplay();
