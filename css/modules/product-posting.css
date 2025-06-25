@@ -3,6 +3,96 @@
    product-posting.js 모듈에 대응
    ========================================================================== */
 
+/* 포스팅 탭 스타일 */
+.tabs {
+    display: flex;
+    margin-bottom: var(--spacing-lg);
+    background: #f8f9fa;
+    border-radius: var(--border-radius-md);
+    padding: 4px;
+    border: var(--border-light);
+}
+
+.tab {
+    flex: 1;
+    padding: 12px var(--spacing-lg);
+    border: none;
+    background: transparent;
+    color: #6c757d;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    font-size: 14px;
+}
+
+.tab:hover {
+    background: rgba(102, 126, 234, 0.1);
+    color: var(--primary-color);
+}
+
+.tab.active {
+    background: white;
+    color: var(--primary-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* 포스팅 폼 컨테이너 */
+.posting-form {
+    background: white;
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+/* 반응형 스타일 (포스팅 전용) */
+@media (max-width: 768px) {
+    .file-upload-area {
+        padding: var(--spacing-md);
+    }
+    
+    .file-upload-area button {
+        width: 100%;
+        margin-bottom: var(--spacing-sm);
+    }
+    
+    .file-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--spacing-sm);
+    }
+    
+    .file-item span {
+        text-align: center;
+    }
+    
+    .remove-file {
+        width: 100%;
+    }
+    
+    .posting-submit-btn {
+        width: 100%;
+        margin-right: 0;
+    }
+    
+    .tabs {
+        flex-direction: column;
+    }
+    
+    .tab {
+        border-radius: var(--border-radius-sm);
+        margin-bottom: 2px;
+    }
+}
+
 /* 전체 초기화 버튼 */
 .clear-all {
     background: var(--error-color);
