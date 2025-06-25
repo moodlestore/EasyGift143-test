@@ -199,3 +199,83 @@
         margin: 0;
     }
 }
+
+/* 카드뉴스 아이디어 입력 섹션 */
+.cardnews-idea-input {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: stretch;
+}
+
+.cardnews-idea-input input {
+    flex: 1;
+}
+
+.cardnews-idea-input button {
+    flex: none;
+    white-space: nowrap;
+    margin: 0;
+}
+
+/* 카드뉴스 액션 버튼들 */
+.cardnews-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.cardnews-actions button {
+    flex: none;
+}
+
+/* 카드뉴스 폼 그룹 스타일 강화 */
+.cardnews-container .form-group > div {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: stretch;
+}
+
+.cardnews-container .form-group > div input {
+    flex: 1;
+}
+
+.cardnews-container .form-group > div button {
+    flex: none;
+    margin: 0;
+}
+
+/* Step 별 섹션 스타일 */
+.cardnews-container .step-section {
+    background: #f8f9fa;
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius-md);
+    margin-bottom: var(--spacing-lg);
+    border-left: 4px solid var(--primary-color);
+}
+
+.cardnews-container .step-section h3 {
+    margin: 0 0 var(--spacing-md) 0;
+    color: var(--primary-color);
+    font-size: 1.1em;
+}
+
+/* 카드뉴스 본문 복사 버튼 */
+.copy-content-btn {
+    background: var(--info-color);
+    margin-right: var(--spacing-sm);
+}
+
+.copy-content-btn:hover:not(:disabled) {
+    background: #138496;
+}
+
+/* Canva 링크 버튼 */
+.canva-link-btn {
+    background: #00d4aa;
+    color: white;
+}
+
+.canva-link-btn:hover:not(:disabled) {
+    background: #00b894;
+}
